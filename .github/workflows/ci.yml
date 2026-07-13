@@ -18,10 +18,10 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Restore
-        run: dotnet restore CmdPal.Ext.Power.sln
+        run: dotnet restore CmdPal.Ext.Power.slnx
 
       - name: Build
-        run: dotnet build CmdPal.Ext.Power.sln -c Release -p:Platform=x64 --no-restore
+        run: dotnet build CmdPal.Ext.Power.slnx -c Release -p:Platform=x64 --no-restore
 
       - name: Test
         run: dotnet test CmdPal.Ext.Power.UnitTests\CmdPal.Ext.Power.UnitTests.csproj -c Release -p:Platform=x64 --no-build --verbosity normal

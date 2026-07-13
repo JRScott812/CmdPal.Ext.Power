@@ -20,7 +20,7 @@ Originally proposed as a PowerToys built-in ([PR #49027](https://github.com/micr
 ## Build
 
 ```powershell
-dotnet build CmdPal.Ext.Power.sln -c Debug -p:Platform=x64
+dotnet build CmdPal.Ext.Power.slnx -c Debug -p:Platform=x64
 ```
 
 Create an MSIX (needed for local install):
