@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "CmdPal.Ext.Power (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "CmdPal.Ext.Power (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

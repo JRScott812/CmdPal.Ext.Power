@@ -1,0 +1,33 @@
+# Ignore build outputs and user files
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# MSIX / packaging
+AppPackages/
+BundleArtifacts/
+_layout/
+Package.StoreAssociation.xml
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.appxupload
+
+# Local signing certificates (never commit private keys)
+*_TemporaryKey.pfx
+*_TemporaryKey.cer
+*.pfx
+Directory.Build.user.props
+
+# IDE / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+Thumbs.db
+Desktop.ini

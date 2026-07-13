@@ -1,0 +1,12 @@
+GetSystemPowerStatus
+SYSTEM_POWER_STATUS
+
+PowerGetActiveScheme
+PowerSetActiveScheme
+PowerEnumerate
+PowerReadFriendlyName
+POWER_DATA_ACCESSOR
+
+LocalFree
+
+WIN32_ERROR

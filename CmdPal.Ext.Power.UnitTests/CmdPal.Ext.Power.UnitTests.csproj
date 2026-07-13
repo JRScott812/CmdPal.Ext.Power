@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>CmdPal.Ext.Power.UnitTests</RootNamespace>
+    <WindowsSdkPackageVersion>10.0.26100.68-preview</WindowsSdkPackageVersion>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <Platforms>x64;ARM64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" />
+    <!-- Required by Extensions.Toolkit FuzzyStringMatcher at test runtime -->
+    <PackageReference Include="ToolGood.Words.Pinyin" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CmdPal.Ext.Power\CmdPal.Ext.Power.csproj" />
+  </ItemGroup>
+</Project>
