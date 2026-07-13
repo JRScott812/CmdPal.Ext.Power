@@ -10,8 +10,7 @@ namespace CmdPal.Ext.Power;
 public sealed partial class CmdPalExtPower : IExtension, IDisposable
 {
 	private readonly ManualResetEvent _extensionDisposedEvent;
-
-	private readonly PowerCommandsProvider _provider = new();
+	private PowerCommandsProvider? _provider;
 
 	public CmdPalExtPower(ManualResetEvent extensionDisposedEvent) => _extensionDisposedEvent = extensionDisposedEvent;
 
@@ -19,10 +18,29 @@ public sealed partial class CmdPalExtPower : IExtension, IDisposable
 	{
 		return providerType switch
 		{
-			ProviderType.Commands => _provider,
+			ProviderType.Commands => GetCommandsProvider(),
 			_ => null,
 		};
 	}
 
 	public void Dispose() => _extensionDisposedEvent.Set();
+
+	private PowerCommandsProvider? GetCommandsProvider()
+	{
+		if (_provider is not null)
+		{
+			return _provider;
+		}
+
+		try
+		{
+			_provider ??= new PowerCommandsProvider();
+			return _provider;
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine(ex);
+			return null;
+		}
+	}
 }

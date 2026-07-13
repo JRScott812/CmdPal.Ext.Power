@@ -20,6 +20,16 @@
 		<WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
 		<!-- Signing is opt-in for local packaging. See scripts/New-LocalSigningCert.ps1 -->
 		<AppxPackageSigningEnabled Condition="'$(AppxPackageSigningEnabled)' == ''">false</AppxPackageSigningEnabled>
+		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
+		<AppxPackageIdentityName>JakeScott.PowerControlExtensionforCommandPalette</AppxPackageIdentityName>
+		<AppxPackagePublisher>CN=A519B659-ED57-43B1-8525-0358CED8D6F5</AppxPackagePublisher>
+		<AppxPackageVersion>0.0.1.0</AppxPackageVersion>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<AppxBundle>Never</AppxBundle>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -64,21 +74,7 @@
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<IsAotCompatible>true</IsAotCompatible>
-		<CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
-		<CsWinRTAotWarningLevel>2</CsWinRTAotWarningLevel>
-		<WarningsNotAsErrors>IL2081;$(WarningsNotAsErrors)</WarningsNotAsErrors>
-		<ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
-	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
-		<PublishTrimmed>false</PublishTrimmed>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'!='Debug'">
-		<PublishTrimmed>true</PublishTrimmed>
-	</PropertyGroup>
 
 	<ItemGroup>
 		<Compile Update="Properties\Resources.Designer.cs">

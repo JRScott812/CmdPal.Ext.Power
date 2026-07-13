@@ -1,46 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
-  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap3 rescap">
-
-  <Identity
-    Name="JRScott812.CmdPal.Ext.Power"
-    Publisher="CN=JRScott812"
-    Version="0.0.1.0" />
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" IgnorableNamespaces="uap uap3 rescap mp">
+  <Identity Name="JakeScott.PowerControlExtensionforCommandPalette" Publisher="CN=A519B659-ED57-43B1-8525-0358CED8D6F5" Version="0.0.1.0" />
   <!-- For Store publishing, replace Publisher with your Partner Center identity. -->
-
   <Properties>
-    <DisplayName>Power</DisplayName>
-    <PublisherDisplayName>JRScott812</PublisherDisplayName>
+    <DisplayName>Power Control Extension for Command Palette</DisplayName>
+    <PublisherDisplayName>Jake Scott</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
-
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
-
   <Resources>
-    <Resource Language="x-generate"/>
+    <Resource Language="x-generate" />
   </Resources>
-
   <Applications>
-    <Application Id="App"
-      Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$">
-      <uap:VisualElements
-        DisplayName="Power"
-        Description="Switch Windows power modes and power plans from Command Palette"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+      <uap:VisualElements DisplayName="Power Control Extension for Command Palette" Description="Switch Windows power modes and power plans from Command Palette" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.scale-200.png" Square44x44Logo="Assets\Square44x44Logo.scale-200.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.scale-200.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.scale-200.png" />
       </uap:VisualElements>
       <Extensions>
         <com:Extension Category="windows.comServer">
@@ -51,18 +29,14 @@
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.commandpalette"
-            Id="power"
-            PublicFolder="Public"
-            DisplayName="Power"
-            Description="Switch Windows power modes and power plans from Command Palette">
+          <uap3:AppExtension Name="com.microsoft.commandpalette" Id="power" PublicFolder="Public" DisplayName="Power" Description="Switch Windows power modes and power plans from Command Palette">
             <uap3:Properties>
               <CmdPalProvider>
                 <Activation>
                   <CreateInstance ClassId="6D9ABD73-60FC-4BB5-9342-8CD5BFFC17CE" />
                 </Activation>
                 <SupportedInterfaces>
-                  <Commands/>
+                  <Commands />
                 </SupportedInterfaces>
               </CmdPalProvider>
             </uap3:Properties>
@@ -71,9 +45,7 @@
       </Extensions>
     </Application>
   </Applications>
-
   <Capabilities>
-    <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>
