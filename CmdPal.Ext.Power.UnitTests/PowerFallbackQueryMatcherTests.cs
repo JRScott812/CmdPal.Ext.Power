@@ -1,6 +1,3 @@
-// Copyright (c) JRScott812
-// Licensed under the MIT License.
-
 using CmdPal.Ext.Power.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

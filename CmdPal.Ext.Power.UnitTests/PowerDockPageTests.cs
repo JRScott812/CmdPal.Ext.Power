@@ -1,6 +1,3 @@
-// Copyright (c) JRScott812
-// Licensed under the MIT License.
-
 using System.Linq;
 using CmdPal.Ext.Power.Helpers;
 using CmdPal.Ext.Power.Pages;

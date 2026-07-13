@@ -1,6 +1,3 @@
-// Copyright (c) JRScott812
-// Licensed under the MIT License.
-
 using System;
 using CmdPal.Ext.Power.Classes;
 using CmdPal.Ext.Power.Enumerations;
