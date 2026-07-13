@@ -1,12 +1,12 @@
 using System;
 using System.Threading;
+
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+
 using Windows.Foundation;
 
 namespace CmdPal.Ext.Power;
-
-#pragma warning disable SA1402 // File may only contain a single type
 
 /// <summary>
 /// Helper class for creating ListPage's which can listen for when they're
@@ -19,89 +19,84 @@ namespace CmdPal.Ext.Power;
 /// </summary>
 internal abstract partial class OnLoadStaticListPage : OnLoadBasePage, IListPage
 {
-    private string _searchText = string.Empty;
+	private string _searchText = string.Empty;
 
-    public virtual string PlaceholderText { get; set => SetProperty(ref field, value); } = string.Empty;
+	public virtual string PlaceholderText { get; set => SetProperty(ref field, value); } = string.Empty;
 
-    public virtual string SearchText { get => _searchText; set => SetProperty(ref _searchText, value); }
+	public virtual string SearchText { get => _searchText; set => SetProperty(ref _searchText, value); }
 
-    public virtual bool ShowDetails { get; set => SetProperty(ref field, value); }
+	public virtual bool ShowDetails { get; set => SetProperty(ref field, value); }
 
-    public virtual bool HasMoreItems { get; set => SetProperty(ref field, value); }
+	public virtual bool HasMoreItems { get; set => SetProperty(ref field, value); }
 
-    public virtual IFilters? Filters { get; set => SetProperty(ref field, value); }
+	public virtual IFilters? Filters { get; set => SetProperty(ref field, value); }
 
-    public virtual IGridProperties? GridProperties { get; set => SetProperty(ref field, value); }
+	public virtual IGridProperties? GridProperties { get; set => SetProperty(ref field, value); }
 
-    public virtual ICommandItem? EmptyContent { get; set => SetProperty(ref field, value); }
+	public virtual ICommandItem? EmptyContent { get; set => SetProperty(ref field, value); }
 
-    public void LoadMore()
-    {
-    }
+	public void LoadMore()
+	{
+	}
 
-    protected void SetSearchNoUpdate(string newSearchText)
-    {
-        _searchText = newSearchText;
-    }
+	protected void SetSearchNoUpdate(string newSearchText) => _searchText = newSearchText;
 
-    public abstract IListItem[] GetItems();
+	public abstract IListItem[] GetItems();
 }
 
 internal abstract partial class OnLoadBasePage : Page
 {
-    private readonly Lock _loadLock = new();
-    private int _loadCount;
+	private readonly Lock _loadLock = new();
+	private int _loadCount;
 
 #pragma warning disable CS0067 // The event is never used
 
-    private event TypedEventHandler<object, IItemsChangedEventArgs>? InternalItemsChanged;
+	private event TypedEventHandler<object, IItemsChangedEventArgs>? InternalItemsChanged;
 #pragma warning restore CS0067 // The event is never used
 
-    public event TypedEventHandler<object, IItemsChangedEventArgs> ItemsChanged
-    {
-        add
-        {
-            InternalItemsChanged += value;
-            lock (_loadLock)
-            {
-                if (_loadCount == 0)
-                {
-                    Loaded();
-                }
+	public event TypedEventHandler<object, IItemsChangedEventArgs> ItemsChanged
+	{
+		add
+		{
+			InternalItemsChanged += value;
+			lock (_loadLock)
+			{
+				if (_loadCount == 0)
+				{
+					Loaded();
+				}
 
-                _loadCount++;
-            }
-        }
+				_loadCount++;
+			}
+		}
 
-        remove
-        {
-            InternalItemsChanged -= value;
-            lock (_loadLock)
-            {
-                _loadCount--;
-                _loadCount = Math.Max(0, _loadCount);
-                if (_loadCount == 0)
-                {
-                    Unloaded();
-                }
-            }
-        }
-    }
+		remove
+		{
+			InternalItemsChanged -= value;
+			lock (_loadLock)
+			{
+				_loadCount--;
+				_loadCount = Math.Max(0, _loadCount);
+				if (_loadCount == 0)
+				{
+					Unloaded();
+				}
+			}
+		}
+	}
 
-    protected abstract void Loaded();
+	protected abstract void Loaded();
 
-    protected abstract void Unloaded();
+	protected abstract void Unloaded();
 
-    protected void RaiseItemsChanged(int totalItems = -1)
-    {
-        try
-        {
-            InternalItemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
-        }
-        catch
-        {
-        }
-    }
+	protected void RaiseItemsChanged(int totalItems = -1)
+	{
+		try
+		{
+			InternalItemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
+		}
+		catch
+		{
+		}
+	}
 }
-
-#pragma warning restore SA1402 // File may only contain a single type

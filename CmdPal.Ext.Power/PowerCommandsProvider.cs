@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+
 using CmdPal.Ext.Power.Helpers;
 using CmdPal.Ext.Power.Pages;
 using CmdPal.Ext.Power.Properties;
+
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -10,113 +12,113 @@ namespace CmdPal.Ext.Power;
 
 public sealed partial class PowerCommandsProvider : CommandProvider, IDisposable
 {
-    private readonly PowerModeService _powerModeService = new();
-    private readonly PowerPlanService _powerPlanService = new();
-    private readonly PowerModeDataManager _dataManager;
-    private readonly PowerListItemBuilder _itemBuilder;
-    private readonly CommandItem _command;
-    private readonly PowerListPage _listPage;
-    private readonly PowerModePickerPage _modePickerPage;
-    private readonly PowerPlanPickerPage _planPickerPage;
-    private readonly PowerDockPage _modeDockPage;
-    private readonly PowerDockPage _planDockPage;
-    private readonly FallbackPowerItem _fallback;
+	private readonly PowerModeService _powerModeService = new();
+	private readonly PowerPlanService _powerPlanService = new();
+	private readonly PowerModeDataManager _dataManager;
+	private readonly PowerListItemBuilder _itemBuilder;
+	private readonly CommandItem _command;
+	private readonly PowerListPage _listPage;
+	private readonly PowerModePickerPage _modePickerPage;
+	private readonly PowerPlanPickerPage _planPickerPage;
+	private readonly PowerDockPage _modeDockPage;
+	private readonly PowerDockPage _planDockPage;
+	private readonly FallbackPowerItem _fallback;
 
-    public PowerCommandsProvider()
-    {
-        DisplayName = Resources.power_display_name;
-        Id = "com.jrscott812.cmdpal.power";
-        Icon = Icons.PowerExtensionIcon;
+	public PowerCommandsProvider()
+	{
+		DisplayName = Resources.power_display_name;
+		Id = "com.jrscott812.cmdpal.power";
+		Icon = Icons.PowerExtensionIcon;
 
-        _itemBuilder = new PowerListItemBuilder(_powerModeService, _powerPlanService);
+		_itemBuilder = new PowerListItemBuilder(_powerModeService, _powerPlanService);
 
-        PowerListPage? listPage = null;
-        PowerModePickerPage? modePickerPage = null;
-        PowerPlanPickerPage? planPickerPage = null;
-        PowerDockPage? modeDockPage = null;
-        PowerDockPage? planDockPage = null;
+		PowerListPage? listPage = null;
+		PowerModePickerPage? modePickerPage = null;
+		PowerPlanPickerPage? planPickerPage = null;
+		PowerDockPage? modeDockPage = null;
+		PowerDockPage? planDockPage = null;
 
-        _dataManager = new PowerModeDataManager(_powerModeService, HandleLiveStateChanged);
+		_dataManager = new PowerModeDataManager(_powerModeService, HandleLiveStateChanged);
 
-        listPage = new PowerListPage(_powerModeService, _powerPlanService, _dataManager, _itemBuilder);
-        _listPage = listPage;
+		listPage = new PowerListPage(_powerModeService, _powerPlanService, _dataManager, _itemBuilder);
+		_listPage = listPage;
 
-        modePickerPage = new PowerModePickerPage(_powerModeService, _dataManager, _itemBuilder, HandleLiveStateChanged);
-        _modePickerPage = modePickerPage;
+		modePickerPage = new PowerModePickerPage(_powerModeService, _dataManager, _itemBuilder, HandleLiveStateChanged);
+		_modePickerPage = modePickerPage;
 
-        planPickerPage = new PowerPlanPickerPage(_powerPlanService, _dataManager, _itemBuilder, HandleLiveStateChanged);
-        _planPickerPage = planPickerPage;
+		planPickerPage = new PowerPlanPickerPage(_powerPlanService, _dataManager, _itemBuilder, HandleLiveStateChanged);
+		_planPickerPage = planPickerPage;
 
-        modeDockPage = new PowerDockPage(
-            PowerDockScope.Mode,
-            _powerModeService,
-            _powerPlanService,
-            modePickerPage,
-            planPickerPage,
-            _dataManager);
-        _modeDockPage = modeDockPage;
+		modeDockPage = new PowerDockPage(
+			PowerDockScope.Mode,
+			_powerModeService,
+			_powerPlanService,
+			modePickerPage,
+			planPickerPage,
+			_dataManager);
+		_modeDockPage = modeDockPage;
 
-        planDockPage = new PowerDockPage(
-            PowerDockScope.Plan,
-            _powerModeService,
-            _powerPlanService,
-            modePickerPage,
-            planPickerPage,
-            _dataManager);
-        _planDockPage = planDockPage;
+		planDockPage = new PowerDockPage(
+			PowerDockScope.Plan,
+			_powerModeService,
+			_powerPlanService,
+			modePickerPage,
+			planPickerPage,
+			_dataManager);
+		_planDockPage = planDockPage;
 
-        _fallback = new FallbackPowerItem(_listPage);
+		_fallback = new FallbackPowerItem(_listPage);
 
-        _command = new CommandItem(_listPage)
-        {
-            Title = Resources.power_page_title,
-            Icon = Icons.PowerExtensionIcon,
-        };
-    }
+		_command = new CommandItem(_listPage)
+		{
+			Title = Resources.power_page_title,
+			Icon = Icons.PowerExtensionIcon,
+		};
+	}
 
-    public override ICommandItem[] TopLevelCommands() => [_command];
+	public override ICommandItem[] TopLevelCommands() => [_command];
 
-    public override IFallbackCommandItem[] FallbackCommands() => [_fallback];
+	public override IFallbackCommandItem[] FallbackCommands() => [_fallback];
 
-    public override ICommandItem[]? GetDockBands()
-    {
-        var bands = new List<ICommandItem>();
+	public override ICommandItem[]? GetDockBands()
+	{
+		List<ICommandItem> bands = [];
 
-        if (_powerModeService.SupportsPowerModeControl())
-        {
-            bands.Add(new CommandItem(_modeDockPage)
-            {
-                Title = Resources.power_mode_dock_band_title,
-                Icon = Icons.PowerModeBandIcon,
-            });
-        }
+		if (_powerModeService.SupportsPowerModeControl())
+		{
+			bands.Add(new CommandItem(_modeDockPage)
+			{
+				Title = Resources.power_mode_dock_band_title,
+				Icon = Icons.PowerModeBandIcon,
+			});
+		}
 
-        if (_powerPlanService.GetSnapshot().CanReadPlans)
-        {
-            bands.Add(new CommandItem(_planDockPage)
-            {
-                Title = Resources.power_plan_dock_band_title,
-                Icon = Icons.PowerPlanBandIcon,
-            });
-        }
+		if (_powerPlanService.GetSnapshot().CanReadPlans)
+		{
+			bands.Add(new CommandItem(_planDockPage)
+			{
+				Title = Resources.power_plan_dock_band_title,
+				Icon = Icons.PowerPlanBandIcon,
+			});
+		}
 
-        return bands.Count > 0 ? bands.ToArray() : null;
-    }
+		return bands.Count > 0 ? bands.ToArray() : null;
+	}
 
-    public override void Dispose()
-    {
-        _dataManager.Dispose();
-        _powerModeService.Dispose();
-        GC.SuppressFinalize(this);
-        base.Dispose();
-    }
+	public override void Dispose()
+	{
+		_dataManager.Dispose();
+		_powerModeService.Dispose();
+		GC.SuppressFinalize(this);
+		base.Dispose();
+	}
 
-    private void HandleLiveStateChanged()
-    {
-        _listPage.HandleLiveStateChanged();
-        _modePickerPage.HandleLiveStateChanged();
-        _planPickerPage.HandleLiveStateChanged();
-        _modeDockPage.HandleLiveStateChanged();
-        _planDockPage.HandleLiveStateChanged();
-    }
+	private void HandleLiveStateChanged()
+	{
+		_listPage.HandleLiveStateChanged();
+		_modePickerPage.HandleLiveStateChanged();
+		_planPickerPage.HandleLiveStateChanged();
+		_modeDockPage.HandleLiveStateChanged();
+		_planDockPage.HandleLiveStateChanged();
+	}
 }

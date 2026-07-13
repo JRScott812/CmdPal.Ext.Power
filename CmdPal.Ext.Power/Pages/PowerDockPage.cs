@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+
 using CmdPal.Ext.Power.Helpers;
 using CmdPal.Ext.Power.Properties;
+
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -9,96 +11,90 @@ namespace CmdPal.Ext.Power.Pages;
 
 internal sealed partial class PowerDockPage : OnLoadStaticListPage
 {
-    private const string BaseId = "com.jrscott812.cmdpal.power";
+	private const string BaseId = "com.jrscott812.cmdpal.power";
 
-    private readonly PowerDockScope _scope;
-    private readonly PowerModeDataManager _dataManager;
-    private readonly PowerModeDockItem? _modeDockItem;
-    private readonly PowerPlanDockItem? _planDockItem;
-    private IListItem[] _items = [];
+	private readonly PowerDockScope _scope;
+	private readonly PowerModeDataManager _dataManager;
+	private readonly PowerModeDockItem? _modeDockItem;
+	private readonly PowerPlanDockItem? _planDockItem;
+	private IListItem[] _items = [];
 
-    public override string Id => _scope switch
-    {
-        PowerDockScope.Mode => $"{BaseId}.mode",
-        PowerDockScope.Plan => $"{BaseId}.plan",
-        _ => throw new InvalidOperationException($"Unsupported dock scope: {_scope}"),
-    };
+	public override string Id => _scope switch
+	{
+		PowerDockScope.Mode => $"{BaseId}.mode",
+		PowerDockScope.Plan => $"{BaseId}.plan",
+		_ => throw new InvalidOperationException($"Unsupported dock scope: {_scope}"),
+	};
 
-    public override IconInfo Icon => _scope switch
-    {
-        PowerDockScope.Mode => Icons.PowerModeBandIcon,
-        PowerDockScope.Plan => Icons.PowerPlanBandIcon,
-        _ => throw new InvalidOperationException($"Unsupported dock scope: {_scope}"),
-    };
+	public override IconInfo Icon => _scope switch
+	{
+		PowerDockScope.Mode => Icons.PowerModeBandIcon,
+		PowerDockScope.Plan => Icons.PowerPlanBandIcon,
+		_ => throw new InvalidOperationException($"Unsupported dock scope: {_scope}"),
+	};
 
-    internal PowerDockPage(
-        PowerDockScope scope,
-        PowerModeService powerModeService,
-        PowerPlanService powerPlanService,
-        PowerModePickerPage modePickerPage,
-        PowerPlanPickerPage planPickerPage,
-        PowerModeDataManager dataManager)
-    {
-        _scope = scope;
-        _dataManager = dataManager;
-        Title = scope switch
-        {
-            PowerDockScope.Mode => Resources.power_mode_dock_band_title,
-            PowerDockScope.Plan => Resources.power_plan_dock_band_title,
-            _ => throw new InvalidOperationException($"Unsupported dock scope: {scope}"),
-        };
-        Name = Title;
+	internal PowerDockPage(
+		PowerDockScope scope,
+		PowerModeService powerModeService,
+		PowerPlanService powerPlanService,
+		PowerModePickerPage modePickerPage,
+		PowerPlanPickerPage planPickerPage,
+		PowerModeDataManager dataManager)
+	{
+		_scope = scope;
+		_dataManager = dataManager;
+		Title = scope switch
+		{
+			PowerDockScope.Mode => Resources.power_mode_dock_band_title,
+			PowerDockScope.Plan => Resources.power_plan_dock_band_title,
+			_ => throw new InvalidOperationException($"Unsupported dock scope: {scope}"),
+		};
+		Name = Title;
 
-        if (scope == PowerDockScope.Mode)
-        {
-            _modeDockItem = new PowerModeDockItem(powerModeService, modePickerPage);
-        }
+		if (scope == PowerDockScope.Mode)
+		{
+			_modeDockItem = new PowerModeDockItem(powerModeService, modePickerPage);
+		}
 
-        if (scope == PowerDockScope.Plan)
-        {
-            _planDockItem = new PowerPlanDockItem(powerPlanService, planPickerPage);
-        }
+		if (scope == PowerDockScope.Plan)
+		{
+			_planDockItem = new PowerPlanDockItem(powerPlanService, planPickerPage);
+		}
 
-        RebuildItems();
-    }
+		RebuildItems();
+	}
 
-    public override IListItem[] GetItems() => _items;
+	public override IListItem[] GetItems() => _items;
 
-    protected override void Loaded()
-    {
-        _dataManager.PushActivate();
-        RefreshPresentation();
-    }
+	protected override void Loaded()
+	{
+		_dataManager.PushActivate();
+		RefreshPresentation();
+	}
 
-    protected override void Unloaded()
-    {
-        _dataManager.PopActivate();
-    }
+	protected override void Unloaded() => _dataManager.PopActivate();
 
-    internal void HandleLiveStateChanged()
-    {
-        RefreshPresentation();
-    }
+	internal void HandleLiveStateChanged() => RefreshPresentation();
 
-    private void RebuildItems()
-    {
-        var items = new List<IListItem>();
-        if (_modeDockItem is not null)
-        {
-            items.Add(_modeDockItem);
-        }
+	private void RebuildItems()
+	{
+		List<IListItem> items = [];
+		if (_modeDockItem is not null)
+		{
+			items.Add(_modeDockItem);
+		}
 
-        if (_planDockItem is not null)
-        {
-            items.Add(_planDockItem);
-        }
+		if (_planDockItem is not null)
+		{
+			items.Add(_planDockItem);
+		}
 
-        _items = items.ToArray();
-    }
+		_items = items.ToArray();
+	}
 
-    private void RefreshPresentation()
-    {
-        _modeDockItem?.RefreshDisplay();
-        _planDockItem?.RefreshDisplay();
-    }
+	private void RefreshPresentation()
+	{
+		_modeDockItem?.RefreshDisplay();
+		_planDockItem?.RefreshDisplay();
+	}
 }

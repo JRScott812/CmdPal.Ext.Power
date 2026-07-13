@@ -1,57 +1,59 @@
 using System;
 using System.Collections.Generic;
+
+using CmdPal.Ext.Power.Classes;
 using CmdPal.Ext.Power.Properties;
+
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace CmdPal.Ext.Power.Helpers;
 
 internal static class PowerFallbackQueryMatcher
 {
-    private static readonly string[] SupplementalTerms =
-    [
-        "powercfg",
-        "power plan",
-        "power mode",
-    ];
+	private static readonly string[] SupplementalTerms =
+	[
+		"powercfg",
+		"power plan",
+		"power mode",
+	];
 
-    private static readonly Lazy<IReadOnlyList<string>> SearchTerms = new(BuildSearchTerms);
+	private static readonly Lazy<IReadOnlyList<string>> SearchTerms = new(BuildSearchTerms);
 
-    internal static bool Matches(string query)
-    {
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return false;
-        }
+	internal static bool Matches(string query)
+	{
+		if (string.IsNullOrWhiteSpace(query))
+		{
+			return false;
+		}
 
-        foreach (var term in SearchTerms.Value)
-        {
-            if (FuzzyStringMatcher.ScoreFuzzy(query, term) > 0)
-            {
-                return true;
-            }
-        }
+		foreach (string term in SearchTerms.Value)
+		{
+			if (FuzzyStringMatcher.ScoreFuzzy(query, term) > 0)
+			{
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    private static IReadOnlyList<string> BuildSearchTerms()
-    {
-        var terms = new List<string>
-        {
-            Resources.power_fallback_title,
-            Resources.power_fallback_subtitle,
-        };
+	private static IReadOnlyList<string> BuildSearchTerms()
+	{
+		List<string> terms =
+		[
+			Resources.power_fallback_title,
+			Resources.power_fallback_subtitle,
+			.. SupplementalTerms,
+		];
 
-        terms.AddRange(SupplementalTerms);
+		foreach (PowerModeDefinition definition in PowerModeCatalog.All)
+		{
+			terms.Add(definition.Label);
+			terms.Add(definition.ShortLabel);
+		}
 
-        foreach (var definition in PowerModeCatalog.All)
-        {
-            terms.Add(definition.Label);
-            terms.Add(definition.ShortLabel);
-        }
+		terms.Add(Resources.power_section_power_plan);
 
-        terms.Add(Resources.power_section_power_plan);
-
-        return terms;
-    }
+		return terms;
+	}
 }
