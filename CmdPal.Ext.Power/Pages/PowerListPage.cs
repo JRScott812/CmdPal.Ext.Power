@@ -10,201 +10,200 @@ using CmdPal.Ext.Power.Properties;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace CmdPal.Ext.Power.Pages;
-
-internal sealed partial class PowerListPage : OnLoadStaticListPage
+namespace CmdPal.Ext.Power.Pages
 {
-	public override string Id => "com.jrscott812.cmdpal.power";
-
-	private readonly PowerModeService _powerModeService;
-	private readonly PowerPlanService _powerPlanService;
-	private readonly PowerModeDataManager _dataManager;
-	private readonly PowerListItemBuilder _itemBuilder;
-
-	private ListItem? _efficiencyItem;
-	private ListItem? _balancedItem;
-	private ListItem? _performanceItem;
-	private IListItem[] _items = [];
-	private List<ListItem> _powerPlanItems = [];
-	private IReadOnlyList<Guid> _cachedPlanGuids = [];
-	private bool _itemsIncludeModeCommands;
-	private bool _itemsIncludePowerPlans;
-	private bool _itemsInitialized;
-
-	internal PowerListPage(
-		PowerModeService powerModeService,
-		PowerPlanService powerPlanService,
-		PowerModeDataManager dataManager,
-		PowerListItemBuilder itemBuilder)
+	internal sealed partial class PowerListPage : OnLoadStaticListPage
 	{
-		_powerModeService = powerModeService;
-		_powerPlanService = powerPlanService;
-		_dataManager = dataManager;
-		_itemBuilder = itemBuilder;
-		Title = Resources.power_page_title;
-		Name = Resources.power_page_title;
-		Icon = Icons.PowerExtensionIcon;
-		ShowDetails = true;
+		public override string Id => "com.jrscott812.cmdpal.power";
 
-		RebuildItemListIfNeeded(force: true);
-		RefreshPresentation();
-	}
+		private readonly PowerModeService _powerModeService;
+		private readonly PowerPlanService _powerPlanService;
+		private readonly PowerModeDataManager _dataManager;
+		private readonly PowerListItemBuilder _itemBuilder;
 
-	public override IListItem[] GetItems()
-	{
-		RebuildItemListIfNeeded(force: false);
-		return _items;
-	}
+		private ListItem? _efficiencyItem;
+		private ListItem? _balancedItem;
+		private ListItem? _performanceItem;
+		private IListItem[] _items = [];
+		private List<ListItem> _powerPlanItems = [];
+		private Guid[] _cachedPlanGuids = [];
+		private bool _itemsIncludeModeCommands;
+		private bool _itemsIncludePowerPlans;
+		private bool _itemsInitialized;
 
-	protected override void Loaded()
-	{
-		_dataManager.PushActivate();
-		RefreshPresentation();
-	}
-
-	protected override void Unloaded() => _dataManager.PopActivate();
-
-	private void RebuildItemListIfNeeded(bool force)
-	{
-		bool supportsControl = _powerModeService.SupportsPowerModeControl();
-		PowerPlanSnapshot planSnapshot = _powerPlanService.GetSnapshot();
-		bool supportsPlans = planSnapshot.CanReadPlans;
-		RebuildPowerPlanItemsIfNeeded(planSnapshot, force);
-
-		if (!force
-			&& _itemsInitialized
-			&& _itemsIncludeModeCommands == supportsControl
-			&& _itemsIncludePowerPlans == supportsPlans
-			&& (!_itemsIncludePowerPlans || _cachedPlanGuids.SequenceEqual(planSnapshot.AvailablePlans.Select(p => p.SchemeGuid))))
+		internal PowerListPage(
+			PowerModeService powerModeService,
+			PowerPlanService powerPlanService,
+			PowerModeDataManager dataManager,
+			PowerListItemBuilder itemBuilder)
 		{
-			return;
+			_powerModeService = powerModeService;
+			_powerPlanService = powerPlanService;
+			_dataManager = dataManager;
+			_itemBuilder = itemBuilder;
+			Title = Resources.power_page_title;
+			Name = Resources.power_page_title;
+			Icon = Icons.PowerExtensionIcon;
+			ShowDetails = true;
+
+			RebuildItemListIfNeeded(force: true);
+			RefreshPresentation();
 		}
 
-		List<IListItem> list = [];
-
-		if (supportsControl)
+		public override IListItem[] GetItems()
 		{
-			_efficiencyItem = _itemBuilder.CreateModeItem(
-				UserPowerMode.BestEfficiency,
-				Resources.power_mode_set_efficiency_title,
-				Resources.power_mode_set_efficiency_toast,
-				RefreshPresentation);
-			_balancedItem = _itemBuilder.CreateModeItem(
-				UserPowerMode.Balanced,
-				Resources.power_mode_set_balanced_title,
-				Resources.power_mode_set_balanced_toast,
-				RefreshPresentation);
-			_performanceItem = _itemBuilder.CreateModeItem(
-				UserPowerMode.BestPerformance,
-				Resources.power_mode_set_performance_title,
-				Resources.power_mode_set_performance_toast,
-				RefreshPresentation);
-
-			AddSection(
-				list,
-				Resources.power_section_power_mode,
-				_efficiencyItem,
-				_balancedItem,
-				_performanceItem);
-		}
-		else
-		{
-			_efficiencyItem = null;
-			_balancedItem = null;
-			_performanceItem = null;
+			RebuildItemListIfNeeded(force: false);
+			return _items;
 		}
 
-		if (supportsPlans)
+		protected override void Loaded()
 		{
-			AddSection(list, Resources.power_section_power_plan, _powerPlanItems);
+			_dataManager.PushActivate();
+			RefreshPresentation();
 		}
 
-		bool structureChanged = _itemsInitialized
-			&& (_itemsIncludeModeCommands != supportsControl
-				|| _itemsIncludePowerPlans != supportsPlans
-				|| (supportsPlans && !_cachedPlanGuids.SequenceEqual(planSnapshot.AvailablePlans.Select(p => p.SchemeGuid))));
-		_itemsIncludeModeCommands = supportsControl;
-		_itemsIncludePowerPlans = supportsPlans;
-		_items = list.ToArray();
-		_itemsInitialized = true;
+		protected override void Unloaded() => _dataManager.PopActivate();
 
-		if (structureChanged)
+		private void RebuildItemListIfNeeded(bool force)
 		{
-			RaiseItemsChanged(_items.Length);
-		}
-	}
+			bool supportsControl = PowerModeService.SupportsPowerModeControl();
+			PowerPlanSnapshot planSnapshot = PowerPlanService.GetSnapshot();
+			bool supportsPlans = planSnapshot.CanReadPlans;
+			RebuildPowerPlanItemsIfNeeded(planSnapshot, force);
 
-	private static void AddSection(List<IListItem> list, string sectionTitle, params ListItem[] items) => AddSection(list, sectionTitle, (IEnumerable<ListItem>)items);
-
-	private static void AddSection(List<IListItem> list, string sectionTitle, IEnumerable<ListItem> items)
-	{
-		list.Add(new Separator(sectionTitle));
-		foreach (ListItem item in items)
-		{
-			item.Section = sectionTitle;
-			list.Add(item);
-		}
-	}
-
-	private void RebuildPowerPlanItemsIfNeeded(PowerPlanSnapshot snapshot, bool force)
-	{
-		if (!snapshot.CanReadPlans)
-		{
-			if (_powerPlanItems.Count > 0 || _cachedPlanGuids.Count > 0)
+			if (!force
+				&& _itemsInitialized
+				&& _itemsIncludeModeCommands == supportsControl
+				&& _itemsIncludePowerPlans == supportsPlans
+				&& (!_itemsIncludePowerPlans || _cachedPlanGuids.SequenceEqual(planSnapshot.AvailablePlans.Select(p => p.SchemeGuid))))
 			{
-				_powerPlanItems = [];
-				_cachedPlanGuids = [];
+				return;
 			}
 
-			return;
+			List<IListItem> list = [];
+
+			if (supportsControl)
+			{
+				_efficiencyItem = _itemBuilder.CreateModeItem(
+					UserPowerMode.BestEfficiency,
+					Resources.power_mode_set_efficiency_title,
+					Resources.power_mode_set_efficiency_toast,
+					RefreshPresentation);
+				_balancedItem = _itemBuilder.CreateModeItem(
+					UserPowerMode.Balanced,
+					Resources.power_mode_set_balanced_title,
+					Resources.power_mode_set_balanced_toast,
+					RefreshPresentation);
+				_performanceItem = _itemBuilder.CreateModeItem(
+					UserPowerMode.BestPerformance,
+					Resources.power_mode_set_performance_title,
+					Resources.power_mode_set_performance_toast,
+					RefreshPresentation);
+
+				AddSection(
+					list,
+					Resources.power_section_power_mode,
+					_efficiencyItem,
+					_balancedItem,
+					_performanceItem);
+			}
+			else
+			{
+				_efficiencyItem = null;
+				_balancedItem = null;
+				_performanceItem = null;
+			}
+
+			if (supportsPlans)
+			{
+				AddSection(list, Resources.power_section_power_plan, _powerPlanItems);
+			}
+
+			bool structureChanged = _itemsInitialized
+				&& (_itemsIncludeModeCommands != supportsControl
+					|| _itemsIncludePowerPlans != supportsPlans
+					|| (supportsPlans && !_cachedPlanGuids.SequenceEqual(planSnapshot.AvailablePlans.Select(p => p.SchemeGuid))));
+			_itemsIncludeModeCommands = supportsControl;
+			_itemsIncludePowerPlans = supportsPlans;
+			_items = [.. list];
+			_itemsInitialized = true;
+
+			if (structureChanged)
+			{
+				RaiseItemsChanged(_items.Length);
+			}
 		}
 
-		Guid[] planGuids = snapshot.AvailablePlans.Select(plan => plan.SchemeGuid).ToArray();
-		if (!force && _cachedPlanGuids.SequenceEqual(planGuids))
+		private static void AddSection(List<IListItem> list, string sectionTitle, params ListItem[] items) => AddSection(list, sectionTitle, (IEnumerable<ListItem>)items);
+
+		private static void AddSection(List<IListItem> list, string sectionTitle, IEnumerable<ListItem> items)
 		{
-			RefreshPowerPlanItemSubtitles(snapshot);
-			return;
+			list.Add(new Separator(sectionTitle));
+			foreach (ListItem item in items)
+			{
+				item.Section = sectionTitle;
+				list.Add(item);
+			}
 		}
 
-		_cachedPlanGuids = planGuids;
-		_powerPlanItems = snapshot.AvailablePlans
-			.Select(plan => _itemBuilder.CreatePlanItem(plan, snapshot, RefreshPresentation))
-			.ToList();
-	}
-
-	private void RefreshPowerPlanItemSubtitles(PowerPlanSnapshot snapshot)
-	{
-		for (int i = 0; i < _powerPlanItems.Count && i < snapshot.AvailablePlans.Count; i++)
+		private void RebuildPowerPlanItemsIfNeeded(PowerPlanSnapshot snapshot, bool force)
 		{
-			_itemBuilder.RefreshPlanItem(_powerPlanItems[i], snapshot.AvailablePlans[i], snapshot);
+			if (!snapshot.CanReadPlans)
+			{
+				if (_powerPlanItems.Count > 0 || _cachedPlanGuids.Length > 0)
+				{
+					_powerPlanItems = [];
+					_cachedPlanGuids = [];
+				}
+
+				return;
+			}
+
+			Guid[] planGuids = [.. snapshot.AvailablePlans.Select(plan => plan.SchemeGuid)];
+			if (!force && _cachedPlanGuids.SequenceEqual(planGuids))
+			{
+				RefreshPowerPlanItemSubtitles(snapshot);
+				return;
+			}
+
+			_cachedPlanGuids = planGuids;
+			_powerPlanItems = [.. snapshot.AvailablePlans.Select(plan => _itemBuilder.CreatePlanItem(plan, snapshot, RefreshPresentation))];
 		}
-	}
 
-	private void RefreshPresentation()
-	{
-		PowerPlanSnapshot planSnapshot = _powerPlanService.GetSnapshot();
-
-		RefreshPowerPlanItemSubtitles(planSnapshot);
-
-		if (_efficiencyItem is not null)
+		private void RefreshPowerPlanItemSubtitles(PowerPlanSnapshot snapshot)
 		{
-			_itemBuilder.RefreshModeItem(_efficiencyItem, UserPowerMode.BestEfficiency);
+			for (int i = 0; i < _powerPlanItems.Count && i < snapshot.AvailablePlans.Count; i++)
+			{
+				PowerListItemBuilder.RefreshPlanItem(_powerPlanItems[i], snapshot.AvailablePlans[i], snapshot);
+			}
 		}
 
-		if (_balancedItem is not null)
+		private void RefreshPresentation()
 		{
-			_itemBuilder.RefreshModeItem(_balancedItem, UserPowerMode.Balanced);
+			PowerPlanSnapshot planSnapshot = PowerPlanService.GetSnapshot();
+
+			RefreshPowerPlanItemSubtitles(planSnapshot);
+
+			if (_efficiencyItem is not null)
+			{
+				PowerListItemBuilder.RefreshModeItem(_efficiencyItem, UserPowerMode.BestEfficiency);
+			}
+
+			if (_balancedItem is not null)
+			{
+				PowerListItemBuilder.RefreshModeItem(_balancedItem, UserPowerMode.Balanced);
+			}
+
+			if (_performanceItem is not null)
+			{
+				PowerListItemBuilder.RefreshModeItem(_performanceItem, UserPowerMode.BestPerformance);
+			}
 		}
 
-		if (_performanceItem is not null)
+		internal void HandleLiveStateChanged()
 		{
-			_itemBuilder.RefreshModeItem(_performanceItem, UserPowerMode.BestPerformance);
+			RebuildItemListIfNeeded(force: false);
+			RefreshPresentation();
 		}
-	}
-
-	internal void HandleLiveStateChanged()
-	{
-		RebuildItemListIfNeeded(force: false);
-		RefreshPresentation();
 	}
 }

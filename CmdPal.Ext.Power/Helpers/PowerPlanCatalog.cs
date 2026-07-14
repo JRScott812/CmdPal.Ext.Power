@@ -5,58 +5,59 @@ using CmdPal.Ext.Power.Classes;
 using CmdPal.Ext.Power.Constants;
 using CmdPal.Ext.Power.Properties;
 
-namespace CmdPal.Ext.Power.Helpers;
-
-internal static class PowerPlanCatalog
+namespace CmdPal.Ext.Power.Helpers
 {
-	private const int UnknownPlanSpeedOrder = 100;
-
-	internal static int GetSpeedOrder(Guid schemeGuid)
+	internal static class PowerPlanCatalog
 	{
-		return schemeGuid == PowerPlanGuids.PowerSaver
-			? 0
-			: schemeGuid == PowerPlanGuids.Balanced
-			? 1
-			: schemeGuid == PowerPlanGuids.HighPerformance
-			? 2
-			: schemeGuid == PowerPlanGuids.UltimatePerformance ? 3 : UnknownPlanSpeedOrder;
-	}
+		private const int UnknownPlanSpeedOrder = 100;
 
-	internal static int CompareBySpeed(PowerPlanInfo left, PowerPlanInfo right)
-	{
-		int order = GetSpeedOrder(left.SchemeGuid).CompareTo(GetSpeedOrder(right.SchemeGuid));
-		return order != 0 ? order : string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
-	}
-
-	internal static void SortBySpeed(List<PowerPlanInfo> plans) => plans.Sort(CompareBySpeed);
-
-	internal static bool TryGetKnownDescription(Guid schemeGuid, out string description)
-	{
-		if (schemeGuid == PowerPlanGuids.Balanced)
+		internal static int GetSpeedOrder(Guid schemeGuid)
 		{
-			description = Resources.power_plan_desc_balanced;
-			return true;
+			return schemeGuid == PowerPlanGuids.PowerSaver
+				? 0
+				: schemeGuid == PowerPlanGuids.Balanced
+				? 1
+				: schemeGuid == PowerPlanGuids.HighPerformance
+				? 2
+				: schemeGuid == PowerPlanGuids.UltimatePerformance ? 3 : UnknownPlanSpeedOrder;
 		}
 
-		if (schemeGuid == PowerPlanGuids.HighPerformance)
+		internal static int CompareBySpeed(PowerPlanInfo left, PowerPlanInfo right)
 		{
-			description = Resources.power_plan_desc_high_performance;
-			return true;
+			int order = GetSpeedOrder(left.SchemeGuid).CompareTo(GetSpeedOrder(right.SchemeGuid));
+			return order != 0 ? order : string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		if (schemeGuid == PowerPlanGuids.PowerSaver)
-		{
-			description = Resources.power_plan_desc_power_saver;
-			return true;
-		}
+		internal static void SortBySpeed(List<PowerPlanInfo> plans) => plans.Sort(CompareBySpeed);
 
-		if (schemeGuid == PowerPlanGuids.UltimatePerformance)
+		internal static bool TryGetKnownDescription(Guid schemeGuid, out string description)
 		{
-			description = Resources.power_plan_desc_ultimate_performance;
-			return true;
-		}
+			if (schemeGuid == PowerPlanGuids.Balanced)
+			{
+				description = Resources.power_plan_desc_balanced;
+				return true;
+			}
 
-		description = string.Empty;
-		return false;
+			if (schemeGuid == PowerPlanGuids.HighPerformance)
+			{
+				description = Resources.power_plan_desc_high_performance;
+				return true;
+			}
+
+			if (schemeGuid == PowerPlanGuids.PowerSaver)
+			{
+				description = Resources.power_plan_desc_power_saver;
+				return true;
+			}
+
+			if (schemeGuid == PowerPlanGuids.UltimatePerformance)
+			{
+				description = Resources.power_plan_desc_ultimate_performance;
+				return true;
+			}
+
+			description = string.Empty;
+			return false;
+		}
 	}
 }

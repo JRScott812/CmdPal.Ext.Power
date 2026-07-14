@@ -6,54 +6,55 @@ using CmdPal.Ext.Power.Properties;
 
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace CmdPal.Ext.Power.Helpers;
-
-internal static class PowerFallbackQueryMatcher
+namespace CmdPal.Ext.Power.Helpers
 {
-	private static readonly string[] SupplementalTerms =
-	[
-		"powercfg",
-		"power plan",
-		"power mode",
-	];
-
-	private static readonly Lazy<IReadOnlyList<string>> SearchTerms = new(BuildSearchTerms);
-
-	internal static bool Matches(string query)
+	internal static class PowerFallbackQueryMatcher
 	{
-		if (string.IsNullOrWhiteSpace(query))
+		private static readonly string[] SupplementalTerms =
+		[
+			"powercfg",
+			"power plan",
+			"power mode",
+		];
+
+		private static readonly Lazy<IReadOnlyList<string>> SearchTerms = new(BuildSearchTerms);
+
+		internal static bool Matches(string query)
 		{
+			if (string.IsNullOrWhiteSpace(query))
+			{
+				return false;
+			}
+
+			foreach (string term in SearchTerms.Value)
+			{
+				if (FuzzyStringMatcher.ScoreFuzzy(query, term) > 0)
+				{
+					return true;
+				}
+			}
+
 			return false;
 		}
 
-		foreach (string term in SearchTerms.Value)
+		private static List<string> BuildSearchTerms()
 		{
-			if (FuzzyStringMatcher.ScoreFuzzy(query, term) > 0)
+			List<string> terms =
+			[
+				Resources.power_fallback_title,
+				Resources.power_fallback_subtitle,
+				.. SupplementalTerms,
+			];
+
+			foreach (PowerModeDefinition definition in PowerModeCatalog.All)
 			{
-				return true;
+				terms.Add(definition.Label);
+				terms.Add(definition.ShortLabel);
 			}
+
+			terms.Add(Resources.power_section_power_plan);
+
+			return terms;
 		}
-
-		return false;
-	}
-
-	private static IReadOnlyList<string> BuildSearchTerms()
-	{
-		List<string> terms =
-		[
-			Resources.power_fallback_title,
-			Resources.power_fallback_subtitle,
-			.. SupplementalTerms,
-		];
-
-		foreach (PowerModeDefinition definition in PowerModeCatalog.All)
-		{
-			terms.Add(definition.Label);
-			terms.Add(definition.ShortLabel);
-		}
-
-		terms.Add(Resources.power_section_power_plan);
-
-		return terms;
 	}
 }

@@ -1,9 +1,10 @@
-namespace CmdPal.Ext.Power.Enumerations;
-
-internal enum PowerSourceKind
+namespace CmdPal.Ext.Power.Enumerations
 {
-	Unknown,
-	NoBattery,
-	OnBattery,
-	PluggedIn,
+	internal enum PowerSourceKind
+	{
+		Unknown,
+		NoBattery,
+		OnBattery,
+		PluggedIn,
+	}
 }

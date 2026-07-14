@@ -1,9 +1,10 @@
-namespace CmdPal.Ext.Power.Enumerations;
-
-internal enum UserPowerMode
+namespace CmdPal.Ext.Power.Enumerations
 {
-	Unknown,
-	BestEfficiency,
-	Balanced,
-	BestPerformance,
+	internal enum UserPowerMode
+	{
+		Unknown,
+		BestEfficiency,
+		Balanced,
+		BestPerformance,
+	}
 }

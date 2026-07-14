@@ -4,43 +4,44 @@ using System.Threading;
 
 using Microsoft.CommandPalette.Extensions;
 
-namespace CmdPal.Ext.Power;
-
-[Guid("6D9ABD73-60FC-4BB5-9342-8CD5BFFC17CE")]
-public sealed partial class CmdPalExtPower : IExtension, IDisposable
+namespace CmdPal.Ext.Power
 {
-	private readonly ManualResetEvent _extensionDisposedEvent;
-	private PowerCommandsProvider? _provider;
-
-	public CmdPalExtPower(ManualResetEvent extensionDisposedEvent) => _extensionDisposedEvent = extensionDisposedEvent;
-
-	public object? GetProvider(ProviderType providerType)
+	[Guid("6D9ABD73-60FC-4BB5-9342-8CD5BFFC17CE")]
+	public sealed partial class CmdPalExtPower : IExtension, IDisposable
 	{
-		return providerType switch
-		{
-			ProviderType.Commands => GetCommandsProvider(),
-			_ => null,
-		};
-	}
+		private readonly ManualResetEvent _extensionDisposedEvent;
+		private PowerCommandsProvider? _provider;
 
-	public void Dispose() => _extensionDisposedEvent.Set();
+		public CmdPalExtPower(ManualResetEvent extensionDisposedEvent) => _extensionDisposedEvent = extensionDisposedEvent;
 
-	private PowerCommandsProvider? GetCommandsProvider()
-	{
-		if (_provider is not null)
+		public object? GetProvider(ProviderType providerType)
 		{
-			return _provider;
+			return providerType switch
+			{
+				ProviderType.Commands => GetCommandsProvider(),
+				_ => null,
+			};
 		}
 
-		try
+		public void Dispose() => _extensionDisposedEvent.Set();
+
+		private PowerCommandsProvider? GetCommandsProvider()
 		{
-			_provider ??= new PowerCommandsProvider();
-			return _provider;
-		}
-		catch (Exception ex)
-		{
-			Console.Error.WriteLine(ex);
-			return null;
+			if (_provider is not null)
+			{
+				return _provider;
+			}
+
+			try
+			{
+				_provider ??= new PowerCommandsProvider();
+				return _provider;
+			}
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine(ex);
+				return null;
+			}
 		}
 	}
 }

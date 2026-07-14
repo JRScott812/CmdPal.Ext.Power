@@ -9,100 +9,99 @@ using CmdPal.Ext.Power.Properties;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace CmdPal.Ext.Power.Pages;
-
-internal sealed partial class PowerPlanPickerPage : OnLoadStaticListPage
+namespace CmdPal.Ext.Power.Pages
 {
-	public override string Id => "com.jrscott812.cmdpal.power.planPicker";
-
-	private readonly PowerPlanService _powerPlanService;
-	private readonly PowerModeDataManager _dataManager;
-	private readonly PowerListItemBuilder _itemBuilder;
-	private readonly Action _onChanged;
-
-	private IListItem[] _items = [];
-	private List<ListItem> _planItems = [];
-	private IReadOnlyList<Guid> _cachedPlanGuids = [];
-
-	internal PowerPlanPickerPage(
-		PowerPlanService powerPlanService,
-		PowerModeDataManager dataManager,
-		PowerListItemBuilder itemBuilder,
-		Action onChanged)
+	internal sealed partial class PowerPlanPickerPage : OnLoadStaticListPage
 	{
-		_powerPlanService = powerPlanService;
-		_dataManager = dataManager;
-		_itemBuilder = itemBuilder;
-		_onChanged = onChanged;
-		Title = Resources.power_section_power_plan;
-		Name = Resources.power_section_power_plan;
-		Icon = Icons.PowerPlanBandIcon;
+		public override string Id => "com.jrscott812.cmdpal.power.planPicker";
 
-		RebuildItems(force: true);
-	}
+		private readonly PowerPlanService _powerPlanService;
+		private readonly PowerModeDataManager _dataManager;
+		private readonly PowerListItemBuilder _itemBuilder;
+		private readonly Action _onChanged;
 
-	public override IListItem[] GetItems()
-	{
-		RebuildItems(force: false);
-		return _items;
-	}
+		private IListItem[] _items = [];
+		private List<ListItem> _planItems = [];
+		private Guid[] _cachedPlanGuids = [];
 
-	protected override void Loaded()
-	{
-		_dataManager.PushActivate();
-		RefreshPresentation();
-	}
-
-	protected override void Unloaded() => _dataManager.PopActivate();
-
-	internal void HandleLiveStateChanged()
-	{
-		RebuildItems(force: false);
-		RefreshPresentation();
-	}
-
-	private void RebuildItems(bool force)
-	{
-		PowerPlanSnapshot snapshot = _powerPlanService.GetSnapshot();
-		if (!snapshot.CanReadPlans)
+		internal PowerPlanPickerPage(
+			PowerPlanService powerPlanService,
+			PowerModeDataManager dataManager,
+			PowerListItemBuilder itemBuilder,
+			Action onChanged)
 		{
-			if (_planItems.Count > 0)
+			_powerPlanService = powerPlanService;
+			_dataManager = dataManager;
+			_itemBuilder = itemBuilder;
+			_onChanged = onChanged;
+			Title = Resources.power_section_power_plan;
+			Name = Resources.power_section_power_plan;
+			Icon = Icons.PowerPlanBandIcon;
+
+			RebuildItems(force: true);
+		}
+
+		public override IListItem[] GetItems()
+		{
+			RebuildItems(force: false);
+			return _items;
+		}
+
+		protected override void Loaded()
+		{
+			_dataManager.PushActivate();
+			RefreshPresentation();
+		}
+
+		protected override void Unloaded() => _dataManager.PopActivate();
+
+		internal void HandleLiveStateChanged()
+		{
+			RebuildItems(force: false);
+			RefreshPresentation();
+		}
+
+		private void RebuildItems(bool force)
+		{
+			PowerPlanSnapshot snapshot = PowerPlanService.GetSnapshot();
+			if (!snapshot.CanReadPlans)
 			{
-				_planItems = [];
-				_cachedPlanGuids = [];
-				_items = [];
-				RaiseItemsChanged(0);
+				if (_planItems.Count > 0)
+				{
+					_planItems = [];
+					_cachedPlanGuids = [];
+					_items = [];
+					RaiseItemsChanged(0);
+				}
+
+				return;
 			}
 
-			return;
+			Guid[] planGuids = [.. snapshot.AvailablePlans.Select(plan => plan.SchemeGuid)];
+			if (!force && _cachedPlanGuids.SequenceEqual(planGuids))
+			{
+				RefreshPresentation();
+				return;
+			}
+
+			bool structureChanged = _cachedPlanGuids.Length > 0 && !_cachedPlanGuids.SequenceEqual(planGuids);
+			_cachedPlanGuids = planGuids;
+			_planItems = [.. snapshot.AvailablePlans.Select(plan => _itemBuilder.CreatePlanItem(plan, snapshot, _onChanged, dismissOnSuccess: true))];
+			_items = [.. _planItems];
+
+			if (structureChanged)
+			{
+				RaiseItemsChanged(_items.Length);
+			}
 		}
 
-		Guid[] planGuids = snapshot.AvailablePlans.Select(plan => plan.SchemeGuid).ToArray();
-		if (!force && _cachedPlanGuids.SequenceEqual(planGuids))
+		private void RefreshPresentation()
 		{
-			RefreshPresentation();
-			return;
-		}
-
-		bool structureChanged = _cachedPlanGuids.Count > 0 && !_cachedPlanGuids.SequenceEqual(planGuids);
-		_cachedPlanGuids = planGuids;
-		_planItems = snapshot.AvailablePlans
-			.Select(plan => _itemBuilder.CreatePlanItem(plan, snapshot, _onChanged, dismissOnSuccess: true))
-			.ToList();
-		_items = _planItems.ToArray<IListItem>();
-
-		if (structureChanged)
-		{
-			RaiseItemsChanged(_items.Length);
-		}
-	}
-
-	private void RefreshPresentation()
-	{
-		PowerPlanSnapshot snapshot = _powerPlanService.GetSnapshot();
-		for (int i = 0; i < _planItems.Count && i < snapshot.AvailablePlans.Count; i++)
-		{
-			_itemBuilder.RefreshPlanItem(_planItems[i], snapshot.AvailablePlans[i], snapshot);
+			PowerPlanSnapshot snapshot = PowerPlanService.GetSnapshot();
+			for (int i = 0; i < _planItems.Count && i < snapshot.AvailablePlans.Count; i++)
+			{
+				PowerListItemBuilder.RefreshPlanItem(_planItems[i], snapshot.AvailablePlans[i], snapshot);
+			}
 		}
 	}
 }

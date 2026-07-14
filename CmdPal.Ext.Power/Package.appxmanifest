@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" IgnorableNamespaces="uap uap3 rescap mp">
-  <Identity Name="JakeScott.PowerControlExtensionforCommandPalette" Publisher="CN=A519B659-ED57-43B1-8525-0358CED8D6F5" Version="0.0.1.0" />
+  <Identity Name="JakeScott.PowerControlExtensionforCommandPalette" Publisher="CN=A519B659-ED57-43B1-8525-0358CED8D6F5" Version="1.2.2.0" />
   <!-- For Store publishing, replace Publisher with your Partner Center identity. -->
   <Properties>
     <DisplayName>Power Control Extension for Command Palette</DisplayName>

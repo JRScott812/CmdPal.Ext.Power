@@ -4,60 +4,61 @@ using CmdPal.Ext.Power.Properties;
 
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace CmdPal.Ext.Power.Pages;
-
-internal sealed partial class PowerModeDockItem : ListItem
+namespace CmdPal.Ext.Power.Pages
 {
-	private readonly PowerModeService _powerModeService;
-
-	internal PowerModeDockItem(PowerModeService powerModeService, PowerModePickerPage pickerPage)
+	internal sealed partial class PowerModeDockItem : ListItem
 	{
-		_powerModeService = powerModeService;
-		Command = pickerPage;
-		RefreshDisplay();
-	}
+		private readonly PowerModeService _powerModeService;
 
-	internal void RefreshDisplay()
-	{
-		Subtitle = Resources.power_mode_dock_item_subtitle;
-
-		PowerModeSnapshot snapshot = _powerModeService.GetSnapshot();
-		if (!snapshot.CanReadUserMode)
+		internal PowerModeDockItem(PowerModeService powerModeService, PowerModePickerPage pickerPage)
 		{
-			Title = Resources.power_mode_unknown_short;
-			Icon = Icons.UnknownIcon;
-			return;
+			_powerModeService = powerModeService;
+			Command = pickerPage;
+			RefreshDisplay();
 		}
 
-		Title = PowerModeDisplayHelper.GetUserModeShortLabel(snapshot.UserMode);
-		Icon = Icons.Glyph(snapshot.UserMode);
-	}
-}
-
-internal sealed partial class PowerPlanDockItem : ListItem
-{
-	private readonly PowerPlanService _powerPlanService;
-
-	internal PowerPlanDockItem(PowerPlanService powerPlanService, PowerPlanPickerPage pickerPage)
-	{
-		_powerPlanService = powerPlanService;
-		Command = pickerPage;
-		RefreshDisplay();
-	}
-
-	internal void RefreshDisplay()
-	{
-		Subtitle = Resources.power_plan_dock_item_subtitle;
-
-		PowerPlanSnapshot snapshot = _powerPlanService.GetSnapshot();
-		if (!snapshot.CanReadPlans || snapshot.ActivePlan is not { } activePlan)
+		internal void RefreshDisplay()
 		{
-			Title = Resources.power_plan_unknown_short;
-			Icon = Icons.PlanGlyph(snapshot);
-			return;
+			Subtitle = Resources.power_mode_dock_item_subtitle;
+
+			PowerModeSnapshot snapshot = PowerModeService.GetSnapshot();
+			if (!snapshot.CanReadUserMode)
+			{
+				Title = Resources.power_mode_unknown_short;
+				Icon = Icons.UnknownIcon;
+				return;
+			}
+
+			Title = PowerModeDisplayHelper.GetUserModeShortLabel(snapshot.UserMode);
+			Icon = Icons.Glyph(snapshot.UserMode);
+		}
+	}
+
+	internal sealed partial class PowerPlanDockItem : ListItem
+	{
+		private readonly PowerPlanService _powerPlanService;
+
+		internal PowerPlanDockItem(PowerPlanService powerPlanService, PowerPlanPickerPage pickerPage)
+		{
+			_powerPlanService = powerPlanService;
+			Command = pickerPage;
+			RefreshDisplay();
 		}
 
-		Title = PowerPlanDisplayHelper.GetPlanShortTitle(activePlan);
-		Icon = Icons.PlanGlyph(activePlan.SchemeGuid);
+		internal void RefreshDisplay()
+		{
+			Subtitle = Resources.power_plan_dock_item_subtitle;
+
+			PowerPlanSnapshot snapshot = PowerPlanService.GetSnapshot();
+			if (!snapshot.CanReadPlans || snapshot.ActivePlan is not { } activePlan)
+			{
+				Title = Resources.power_plan_unknown_short;
+				Icon = Icons.PlanGlyph(snapshot);
+				return;
+			}
+
+			Title = PowerPlanDisplayHelper.GetPlanShortTitle(activePlan);
+			Icon = Icons.PlanGlyph(activePlan.SchemeGuid);
+		}
 	}
 }

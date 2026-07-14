@@ -1,7 +1,8 @@
-namespace CmdPal.Ext.Power.Pages;
-
-internal enum PowerDockScope
+namespace CmdPal.Ext.Power.Pages
 {
-	Mode,
-	Plan,
+	internal enum PowerDockScope
+	{
+		Mode,
+		Plan,
+	}
 }
