@@ -13,13 +13,16 @@ $ErrorActionPreference = "Stop"
 $projectDir = Join-Path (Split-Path $PSScriptRoot -Parent) "CmdPal.Ext.Power"
 $pfx = Join-Path $projectDir "CmdPal.Ext.Power_TemporaryKey.pfx"
 $cer = Join-Path $projectDir "CmdPal.Ext.Power_TemporaryKey.cer"
+$pwdFile = Join-Path $projectDir "CmdPal.Ext.Power_TemporaryKey.password.txt"
 $subject = "CN=JRScott812"
 
 Get-ChildItem Cert:\CurrentUser\My |
     Where-Object { $_.Subject -eq $subject -and $_.FriendlyName -eq "CmdPal.Ext.Power Dev" } |
     ForEach-Object { Remove-Item "Cert:\CurrentUser\My\$($_.Thumbprint)" -Force -ErrorAction SilentlyContinue }
 
-$password = ConvertTo-SecureString -String "CmdPalPowerLocal!" -Force -AsPlainText
+# Random local-only password (file is gitignored via *.pfx sibling + *.txt under project if needed)
+$plain = -join ((48..57 + 65..90 + 97..122) | Get-Random -Count 24 | ForEach-Object { [char]$_ })
+$password = ConvertTo-SecureString -String $plain -Force -AsPlainText
 $cert = New-SelfSignedCertificate `
     -Type Custom `
     -Subject $subject `
@@ -30,9 +33,11 @@ $cert = New-SelfSignedCertificate `
 
 Export-PfxCertificate -Cert $cert -FilePath $pfx -Password $password | Out-Null
 Export-Certificate -Cert $cert -FilePath $cer | Out-Null
+Set-Content -LiteralPath $pwdFile -Value $plain -Encoding utf8NoBOM
 
 Write-Host "Created: $pfx"
 Write-Host "Created: $cer"
+Write-Host "Created: $pwdFile (local only — do not commit)"
 Write-Host "Thumbprint=$($cert.Thumbprint)"
 Write-Host ""
 Write-Host "Import the .cer into TrustedPeople (and Root if needed) before Add-AppxPackage of a signed MSIX."

@@ -1,0 +1,99 @@
+name: Release WinGet MSIX
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: "10.0.x"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        arch: [x64, ARM64]
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Detect version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}" -replace '^v', ''
+          if ($tag -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+            if ($tag -match '^\d+\.\d+\.\d+$') { $tag = "$tag.0" }
+            else { throw "Tag must be vX.Y.Z or vX.Y.Z.W (got ${{ github.ref_name }})" }
+          }
+          "VERSION=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Sync Package.appxmanifest version
+        shell: pwsh
+        run: |
+          $path = "CmdPal.Ext.Power\Package.appxmanifest"
+          [xml]$xml = Get-Content $path
+          $xml.Package.Identity.Version = "${{ steps.version.outputs.VERSION }}"
+          $xml.Save((Resolve-Path $path))
+
+      - name: Build MSIX
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}"
+          $version = "${{ steps.version.outputs.VERSION }}"
+          $out = "CmdPal.Ext.Power\AppPackages\winget-$arch"
+          dotnet build CmdPal.Ext.Power\CmdPal.Ext.Power.csproj `
+            -c Release `
+            -p:Platform=$arch `
+            -p:GenerateAppxPackageOnBuild=true `
+            -p:AppxPackageDir="$out\" `
+            -p:AppxPackageVersion=$version `
+            -p:AppxBundle=Never
+
+      - name: Stage artifact
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.arch }}".ToLowerInvariant()
+          $version = "${{ steps.version.outputs.VERSION }}"
+          $msix = Get-ChildItem "CmdPal.Ext.Power\AppPackages\winget-${{ matrix.arch }}" -Filter "*.msix" -Recurse |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+          if (-not $msix) { throw "No MSIX found" }
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          Copy-Item $msix.FullName "artifacts\JakeScott.Power_${version}_${arch}.msix"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: msix-${{ matrix.arch }}
+          path: artifacts/*.msix
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.msix
+          generate_release_notes: true
+          body: |
+            MSIX packages for community WinGet (`JakeScott.Power`).
+
+            **Before submitting to winget-pkgs:** sign these packages with a trusted code-signing certificate, then run `.\scripts\Submit-Winget.ps1` (see `winget/README.md`).
+
