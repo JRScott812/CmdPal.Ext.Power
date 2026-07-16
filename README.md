@@ -31,9 +31,7 @@ dotnet build CmdPal.Ext.Power.slnx -c Debug -p:Platform=x64
 .\scripts\Register-Local.ps1
 ```
 
-Requires Windows Developer Mode for local MSIX registration. See `scripts/` for packaging helpers.
-
-WinGet / MSIX release notes for maintainers: [winget/README.md](winget/README.md).
+Requires Windows Developer Mode for local MSIX registration.
 
 ## License
 
