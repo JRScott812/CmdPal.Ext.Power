@@ -1,28 +1,47 @@
 # Ignore build outputs and user files
 **/bin/
 **/obj/
+**/TestResults/
 **/.vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-# MSIX / packaging
+# MSIX / packaging outputs (never commit packages or layouts)
 AppPackages/
 BundleArtifacts/
 _layout/
+artifacts/
+Installer/
+publish/
 Package.StoreAssociation.xml
 *.appx
 *.appxbundle
 *.msix
 *.msixbundle
 *.appxupload
+*.appinstaller
 
-# Local signing certificates (never commit private keys)
+# Signing keys and certificates (public repo — never commit these)
 *_TemporaryKey.pfx
 *_TemporaryKey.cer
+*_TemporaryKey.password.txt
 *.pfx
+*.p12
+*.pem
+*.key
+*.snk
+*.cer
 Directory.Build.user.props
+
+# Local secrets / credentials
+.env
+.env.*
+*.secret
+secrets/
+local.settings.json
+**/wingetcreate*.json
 
 # IDE / OS
 .idea/
@@ -31,3 +50,4 @@ Directory.Build.user.props
 !.vscode/settings.json
 Thumbs.db
 Desktop.ini
+.DS_Store
