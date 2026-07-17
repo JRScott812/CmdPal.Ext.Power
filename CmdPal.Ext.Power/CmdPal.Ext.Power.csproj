@@ -37,6 +37,10 @@
 		<Content Include="Assets\**\*.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<!-- Required so windows.appExtension PublicFolder="Public" is present in the package. -->
+		<Content Include="Public\**\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ItemGroup>

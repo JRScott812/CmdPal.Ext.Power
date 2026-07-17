@@ -120,6 +120,16 @@
   <data name="power_display_name" xml:space="preserve">
     <value>Power</value>
   </data>
+  <data name="power_direct_launch_message" xml:space="preserve">
+    <value>Power is a Command Palette extension.
+
+Open Command Palette (Win+Alt+Space or your PowerToys hotkey), then search for "Power".
+
+This app has no separate window — launching it from the Start menu will not open a UI.</value>
+  </data>
+  <data name="power_direct_launch_caption" xml:space="preserve">
+    <value>Power for Command Palette</value>
+  </data>
   <data name="power_page_title" xml:space="preserve">
     <value>Power</value>
   </data>

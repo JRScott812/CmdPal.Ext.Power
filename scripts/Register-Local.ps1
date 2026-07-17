@@ -7,6 +7,9 @@
 #
 # Usage (from repo root):
 #   .\scripts\Register-Local.ps1
+#
+# Note: Local registration is unsigned (SignatureKind=None) by design. Store installs are
+# signed by Microsoft. You cannot locally sign with the Partner Center publisher CN.
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path $PSScriptRoot -Parent
@@ -33,10 +36,29 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Remove-Item (Join-Path $layout "AppxSignature.p7x") -Force -ErrorAction SilentlyContinue
 Remove-Item (Join-Path $layout "AppxBlockMap.xml") -Force -ErrorAction SilentlyContinue
 
-Get-AppxPackage "JRScott812.CmdPal.Ext.Power" -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
-Add-AppxPackage -Register (Join-Path $layout "AppxManifest.xml")
+$manifestPath = Join-Path $layout "AppxManifest.xml"
+[xml]$manifestXml = Get-Content -Path $manifestPath
+$packageName = $manifestXml.Package.Identity.Name
 
-Get-AppxPackage "JRScott812.CmdPal.Ext.Power" | Format-List Name, PackageFullName, Status, InstallLocation
+# Remove stale local/dev registrations (old and current identity names).
+@(
+    $packageName,
+    "JRScott812.CmdPal.Ext.Power",
+    "JakeScott.PowerControlExtensionforCommandPalette"
+) | Select-Object -Unique | ForEach-Object {
+    Get-AppxPackage $_ -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
+}
+
+Add-AppxPackage -Register $manifestPath
+
+$registered = Get-AppxPackage $packageName
+$registered | Format-List Name, PackageFullName, SignatureKind, Status, InstallLocation
+if (-not (Test-Path (Join-Path $layout "Public"))) {
+    Write-Warning "Public\ folder is missing from the package layout. AppExtension registration may fail."
+}
+
 Write-Host ""
 Write-Host "Registered from: $($msix.FullName)"
+Write-Host "SignatureKind=$($registered.SignatureKind) (None is expected for local Developer Mode registration)."
 Write-Host "Restart Command Palette, then search for 'Power'."
+Write-Host "Do not launch this app from the Start menu — use Command Palette."

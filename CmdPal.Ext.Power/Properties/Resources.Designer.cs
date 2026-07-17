@@ -70,6 +70,24 @@ namespace CmdPal.Ext.Power.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Power for Command Palette.
+        /// </summary>
+        public static string power_direct_launch_caption {
+            get {
+                return ResourceManager.GetString("power_direct_launch_caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power is a Command Palette extension....
+        /// </summary>
+        public static string power_direct_launch_message {
+            get {
+                return ResourceManager.GetString("power_direct_launch_message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View and change Windows power settings.
         /// </summary>
         public static string power_fallback_subtitle {

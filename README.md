@@ -15,7 +15,9 @@ winget install --id 9P5805PFVS3G --source msstore
 
 Requires [PowerToys](https://apps.microsoft.com/detail/XP89DCGQ3K6VLD) with Command Palette enabled (or the standalone Command Palette app).
 
-After install, open Command Palette and search for **Power**, or use the Power dock bands.
+After install, open Command Palette and search for **Power**, or use the Power dock bands. This extension has no standalone window — launching it from the Start menu only shows a short tip.
+
+Store installs are signed by Microsoft. Local Developer Mode registration (`Register-Local.ps1`) is unsigned by design.
 
 ## Features
 

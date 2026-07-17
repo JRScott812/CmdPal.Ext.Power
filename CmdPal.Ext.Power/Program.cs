@@ -1,10 +1,15 @@
 using System;
 using System.Threading;
 
+using CmdPal.Ext.Power.Properties;
+
 using Microsoft.CommandPalette.Extensions;
 
 using Shmuelie.WinRTServer;
 using Shmuelie.WinRTServer.CsWinRT;
+
+using Windows.Win32;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace CmdPal.Ext.Power
 {
@@ -30,7 +35,12 @@ namespace CmdPal.Ext.Power
 			}
 			else
 			{
-				Console.WriteLine("Not being launched as a Extension... exiting.");
+				// Start-menu / Explorer launch has no UI; show guidance instead of a silent exit.
+				_ = PInvoke.MessageBox(
+					default,
+					Resources.power_direct_launch_message,
+					Resources.power_direct_launch_caption,
+					MESSAGEBOX_STYLE.MB_OK | MESSAGEBOX_STYLE.MB_ICONINFORMATION);
 			}
 		}
 	}
