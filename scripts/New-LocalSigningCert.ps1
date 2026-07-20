@@ -33,11 +33,16 @@ $cert = New-SelfSignedCertificate `
 
 Export-PfxCertificate -Cert $cert -FilePath $pfx -Password $password | Out-Null
 Export-Certificate -Cert $cert -FilePath $cer | Out-Null
-Set-Content -LiteralPath $pwdFile -Value $plain -Encoding utf8NoBOM
+# utf8NoBOM is PowerShell 7+; Windows PowerShell 5.1 "utf8" writes a BOM.
+if ($PSVersionTable.PSVersion.Major -ge 7) {
+    Set-Content -LiteralPath $pwdFile -Value $plain -Encoding utf8NoBOM
+} else {
+    [System.IO.File]::WriteAllText($pwdFile, $plain)
+}
 
 Write-Host "Created: $pfx"
 Write-Host "Created: $cer"
-Write-Host "Created: $pwdFile (local only — do not commit)"
+Write-Host "Created: $pwdFile (local only - do not commit)"
 Write-Host "Thumbprint=$($cert.Thumbprint)"
 Write-Host ""
 Write-Host "Import the .cer into TrustedPeople (and Root if needed) before Add-AppxPackage of a signed MSIX."

@@ -79,7 +79,25 @@ namespace CmdPal.Ext.Power.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Power is a Command Palette extension....
+        ///   Looks up a localized string similar to Power is a Command Palette extension and has no separate window....
+        /// </summary>
+        public static string power_direct_launch_cmdpal_failed {
+            get {
+                return ResourceManager.GetString("power_direct_launch_cmdpal_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power is a Command Palette extension and has no separate window....
+        /// </summary>
+        public static string power_direct_launch_cmdpal_missing {
+            get {
+                return ResourceManager.GetString("power_direct_launch_cmdpal_missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power is a Command Palette extension with no separate window....
         /// </summary>
         public static string power_direct_launch_message {
             get {

@@ -30,6 +30,10 @@
 		<GenerateTestArtifacts>True</GenerateTestArtifacts>
 		<AppxBundle>Never</AppxBundle>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+		<!-- Local Debug: package + Register-Local.ps1 after each build. Opt out: -p:RegisterLocalOnBuild=false -->
+		<_IsCiBuild Condition="'$(CI)' == 'true' or '$(GITHUB_ACTIONS)' == 'true' or '$(TF_BUILD)' == 'true'">true</_IsCiBuild>
+		<RegisterLocalOnBuild Condition="'$(RegisterLocalOnBuild)' == '' and '$(Configuration)' == 'Debug' and '$(_IsCiBuild)' != 'true'">true</RegisterLocalOnBuild>
+		<GenerateAppxPackageOnBuild Condition="'$(GenerateAppxPackageOnBuild)' == '' and '$(RegisterLocalOnBuild)' == 'true'">true</GenerateAppxPackageOnBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -94,4 +98,13 @@
 		<AdditionalFiles Include="NativeMethods.txt" />
 		<AdditionalFiles Include="NativeMethods.json" />
 	</ItemGroup>
+
+	<!-- After packaging, re-register the loose layout so Command Palette picks up the new build. -->
+	<Target Name="RegisterLocalPackage"
+			AfterTargets="Build"
+			Condition="'$(RegisterLocalOnBuild)' == 'true' and '$(GenerateAppxPackageOnBuild)' == 'true' and '$(Platform)' == 'x64' and '$(DesignTimeBuild)' != 'true'">
+		<Message Importance="high" Text="Registering local Debug package for Command Palette..." />
+		<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\scripts\Register-Local.ps1&quot;"
+			  IgnoreStandardErrorWarningFormat="true" />
+	</Target>
 </Project>

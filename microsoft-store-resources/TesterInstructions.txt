@@ -1,0 +1,40 @@
+Power Control Extension for Command Palette - Certification Testing Instructions
+
+IMPORTANT - This is NOT a standalone app
+========================================
+This package is a Microsoft PowerToys Command Palette extension (AppExtension
+Name=com.microsoft.commandpalette). It has no main window.
+
+Launching the Start menu tile is expected to open Command Palette (or show a
+short message and the PowerToys Store page if Command Palette is not installed).
+That is correct behavior, not a crash.
+
+Prerequisites
+=============
+1. Install Microsoft PowerToys from the Microsoft Store:
+   https://apps.microsoft.com/detail/XP89DCGQ3K6VLD
+   Product ID: XP89DCGQ3K6VLD
+2. Open PowerToys Settings -> Command Palette -> ensure it is Enabled.
+3. Default activation shortcut: Win+Alt+Space (may vary).
+
+How to test this extension
+==========================
+1. Install this extension package from the Store submission.
+2. Open Command Palette (Win+Alt+Space or PowerToys hotkey).
+3. In Command Palette, run: Reload -> "Reload Command Palette extensions".
+4. Search for: Power
+5. Open Power and switch a power mode and/or power plan.
+6. Optional: enable the Power mode / Power plan dock bands in Command Palette Dock.
+
+Expected results
+================
+- Searching "Power" shows this extension's commands.
+- Changing mode/plan updates Windows power settings.
+- Start-menu launch opens Command Palette (or explains how to install it).
+  Do NOT fail certification solely because Start-menu launch does not show a
+  custom app window.
+
+Contact
+=======
+Publisher: Jake Scott
+Package: JakeScott.PowerControlExtensionforCommandPalette

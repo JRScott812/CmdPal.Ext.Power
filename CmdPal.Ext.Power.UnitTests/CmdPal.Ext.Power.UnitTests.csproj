@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\CmdPal.Ext.Power\CmdPal.Ext.Power.csproj" />
+	<!-- Skip MSIX packaging/registration when tests rebuild the extension project. -->
+	<ProjectReference Include="..\CmdPal.Ext.Power\CmdPal.Ext.Power.csproj">
+	  <AdditionalProperties>RegisterLocalOnBuild=false;GenerateAppxPackageOnBuild=false</AdditionalProperties>
+	</ProjectReference>
   </ItemGroup>
 </Project>

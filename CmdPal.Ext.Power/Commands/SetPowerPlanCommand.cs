@@ -3,6 +3,7 @@ using System;
 using CmdPal.Ext.Power.Helpers;
 using CmdPal.Ext.Power.Properties;
 
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace CmdPal.Ext.Power.Commands
@@ -36,24 +37,16 @@ namespace CmdPal.Ext.Power.Commands
 		{
 			if (!PowerPlanService.TrySetActivePlan(_schemeGuid, out string? error))
 			{
-				return ShowToastKeepOpen(error ?? Resources.power_plan_set_failed);
+				return ConfirmationFeedback.Show(
+					error ?? Resources.power_plan_set_failed,
+					dismissPalette: false,
+					MessageState.Error);
 			}
 
 			_onChanged();
 
 			string message = Resources.power_plan_set_toast_prefix + PowerPlanDisplayHelper.GetPlanTitle(_schemeGuid, _displayName);
-			return ShowToast(message, _dismissOnSuccess);
-		}
-
-		private static CommandResult ShowToastKeepOpen(string message) => ShowToast(message, dismissOnSuccess: false);
-
-		private static CommandResult ShowToast(string message, bool dismissOnSuccess)
-		{
-			return CommandResult.ShowToast(new ToastArgs()
-			{
-				Message = message,
-				Result = dismissOnSuccess ? CommandResult.Dismiss() : CommandResult.KeepOpen(),
-			});
+			return ConfirmationFeedback.Show(message, _dismissOnSuccess);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using CmdPal.Ext.Power.Enumerations;
 using CmdPal.Ext.Power.Helpers;
 using CmdPal.Ext.Power.Properties;
 
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace CmdPal.Ext.Power.Commands
@@ -43,25 +44,20 @@ namespace CmdPal.Ext.Power.Commands
 		{
 			if (!PowerModeService.TrySetUserPowerMode(_mode, out string? error))
 			{
-				return ShowToastKeepOpen(error ?? Resources.power_mode_set_failed);
+				return ConfirmationFeedback.Show(
+					error ?? Resources.power_mode_set_failed,
+					dismissPalette: false,
+					MessageState.Error);
 			}
 
 			_onChanged();
 
-			return string.IsNullOrWhiteSpace(_successToast)
-				? _dismissOnSuccess ? CommandResult.Dismiss() : CommandResult.KeepOpen()
-				: ShowToast(_successToast, _dismissOnSuccess);
-		}
-
-		private static CommandResult ShowToastKeepOpen(string message) => ShowToast(message, dismissOnSuccess: false);
-
-		private static CommandResult ShowToast(string message, bool dismissOnSuccess)
-		{
-			return CommandResult.ShowToast(new ToastArgs()
+			if (string.IsNullOrWhiteSpace(_successToast))
 			{
-				Message = message,
-				Result = dismissOnSuccess ? CommandResult.Dismiss() : CommandResult.KeepOpen(),
-			});
+				return _dismissOnSuccess ? CommandResult.Dismiss() : CommandResult.KeepOpen();
+			}
+
+			return ConfirmationFeedback.Show(_successToast, _dismissOnSuccess);
 		}
 	}
 }

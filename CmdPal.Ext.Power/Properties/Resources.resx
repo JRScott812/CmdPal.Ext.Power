@@ -121,11 +121,19 @@
     <value>Power</value>
   </data>
   <data name="power_direct_launch_message" xml:space="preserve">
-    <value>Power is a Command Palette extension.
+    <value>Power is a Command Palette extension with no separate window.
 
-Open Command Palette (Win+Alt+Space or your PowerToys hotkey), then search for "Power".
+Install PowerToys (with Command Palette enabled), then open Command Palette and search for "Power".</value>
+  </data>
+  <data name="power_direct_launch_cmdpal_missing" xml:space="preserve">
+    <value>Power is a Command Palette extension and has no separate window.
 
-This app has no separate window — launching it from the Start menu will not open a UI.</value>
+Command Palette was not found. Install Microsoft PowerToys from the Store, enable Command Palette, then search for "Power".</value>
+  </data>
+  <data name="power_direct_launch_cmdpal_failed" xml:space="preserve">
+    <value>Power is a Command Palette extension and has no separate window.
+
+Command Palette is installed but could not be started. Open it with Win+Alt+Space (or your PowerToys hotkey), then search for "Power".</value>
   </data>
   <data name="power_direct_launch_caption" xml:space="preserve">
     <value>Power for Command Palette</value>
