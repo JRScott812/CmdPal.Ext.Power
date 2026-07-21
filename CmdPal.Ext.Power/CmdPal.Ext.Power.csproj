@@ -26,7 +26,7 @@
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<AppxPackageIdentityName>JakeScott.PowerControlExtensionforCommandPalette</AppxPackageIdentityName>
 		<AppxPackagePublisher>CN=A519B659-ED57-43B1-8525-0358CED8D6F5</AppxPackagePublisher>
-		<AppxPackageVersion>1.2.7.0</AppxPackageVersion>
+		<AppxPackageVersion>1.2.8.0</AppxPackageVersion>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>

@@ -3,7 +3,7 @@
 ; build-exe.ps1 copies this template per architecture and injects
 ; version, platform source path, and ArchitecturesAllowed.
 
-#define AppVersion "1.2.7.0"
+#define AppVersion "1.2.8.0"
 
 [Setup]
 AppId={{6D9ABD73-60FC-4BB5-9342-8CD5BFFC17CE}}

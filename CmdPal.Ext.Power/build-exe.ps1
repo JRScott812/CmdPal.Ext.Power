@@ -5,7 +5,7 @@
 param(
 	[string]$ExtensionName = "CmdPal.Ext.Power",
 	[string]$Configuration = "Release",
-	[string]$Version = "1.2.7.0",
+	[string]$Version = "1.2.8.0",
 	[string[]]$Platforms = @("x64", "arm64")
 )
 
