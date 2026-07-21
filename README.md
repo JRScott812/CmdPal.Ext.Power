@@ -33,7 +33,3 @@ dotnet build CmdPal.Ext.Power.slnx -c Debug -p:Platform=x64
 ```
 
 Debug x64 builds package the MSIX and run `scripts/Register-Local.ps1` automatically. Requires Windows Developer Mode. Opt out with `-p:RegisterLocalOnBuild=false`.
-
-## License
-
-[MIT](LICENSE)
