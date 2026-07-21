@@ -21,7 +21,7 @@ namespace CmdPal.Ext.Power.UnitTests
 		[TestMethod]
 		public void PlanGlyphUnknownPlanUsesPowerPlanBandIcon()
 		{
-			Guid unknown = System.Guid.Parse("11111111-1111-1111-1111-111111111111");
+			Guid unknown = Guid.Parse("11111111-1111-1111-1111-111111111111");
 			Assert.AreSame(Icons.PowerPlanBandIcon, Icons.PlanGlyph(unknown));
 		}
 	}
