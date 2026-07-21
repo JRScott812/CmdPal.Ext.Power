@@ -21,7 +21,8 @@ jobs:
         run: dotnet restore CmdPal.Ext.Power.slnx
 
       - name: Build
-        run: dotnet build CmdPal.Ext.Power.slnx -c Release -p:Platform=x64 --no-restore
+        # -m:1 avoids CS2012 when the solution and ProjectReference both compile the extension in parallel
+        run: dotnet build CmdPal.Ext.Power.slnx -c Release -p:Platform=x64 -p:GenerateAppxPackageOnBuild=false -m:1 --no-restore
 
       - name: Test
         run: dotnet test CmdPal.Ext.Power.UnitTests\CmdPal.Ext.Power.UnitTests.csproj -c Release -p:Platform=x64 --no-build --verbosity normal

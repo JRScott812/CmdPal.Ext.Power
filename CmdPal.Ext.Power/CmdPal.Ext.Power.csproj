@@ -11,11 +11,14 @@
 		<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
 		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 
-		<WindowsPackageType>None</WindowsPackageType>
+		<!-- Do not set WindowsPackageType=None here — that breaks Store/Debug MSIX.
+		     WinGet unpackaged builds pass -p:WindowsPackageType=None via build-exe.ps1.
+		     PublishProfile is omitted so CI `dotnet build` does not apply ReadyToRun. -->
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<CsWin32RunAsBuildTask>true</CsWin32RunAsBuildTask>
+		<!-- In-process generator avoids nested-dotnet MSB6006 / VBCSCompiler file locks on CI -->
+		<CsWin32RunAsBuildTask>false</CsWin32RunAsBuildTask>
 		<!-- Avoid DeploymentManager auto-init so unit tests can load the assembly without a packaged identity -->
 		<WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
 		<!-- Signing is opt-in for local packaging. See scripts/New-LocalSigningCert.ps1 -->

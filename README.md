@@ -13,53 +13,11 @@ Originally proposed as a PowerToys built-in ([PR #49027](https://github.com/micr
 winget install --id 9P5805PFVS3G --source msstore
 ```
 
-- **WinGet** (community / winget-pkgs — enables Command Palette “Search WinGet” discovery): coming soon as `JakeScott.PowerControlExtensionforCommandPalette`
-
 Requires [PowerToys](https://apps.microsoft.com/detail/XP89DCGQ3K6VLD) with Command Palette enabled (or the standalone Command Palette app).
 
 After install, open Command Palette and search for **Power**, or use the Power dock bands. This extension has no standalone window — launching it from the Start menu only shows a short tip.
 
 Store installs are signed by Microsoft. Local Developer Mode registration (`Register-Local.ps1`) is unsigned by design.
-
-## Release EXE installers (WinGet)
-
-Build unpackaged installers locally (requires [Inno Setup](https://jrsoftware.org/isdl.php) 6 or 7):
-
-```powershell
-cd CmdPal.Ext.Power
-.\build-exe.ps1 -Version "1.2.7.0"
-Get-ChildItem bin\Release\installer\
-```
-
-Or run the **CmdPal Extension - Build EXE Installer** GitHub Action (`workflow_dispatch`) to publish a GitHub Release with x64 and ARM64 setup EXEs.
-
-### First community WinGet submission
-
-After the release assets exist:
-
-```powershell
-winget install Microsoft.WingetCreate
-wingetcreate new "<x64-setup-exe-url>" "<arm64-setup-exe-url>"
-```
-
-Use package id `JakeScott.PowerControlExtensionforCommandPalette`. Before submitting the PR to [winget-pkgs](https://github.com/microsoft/winget-pkgs):
-
-1. Add to each `.locale.*.yaml`:
-
-```yaml
-Tags:
-- windows-commandpalette-extension
-```
-
-2. Add to the `.installer.yaml` dependencies (matches `Microsoft.WindowsAppSDK` 2.2.0):
-
-```yaml
-Dependencies:
-  PackageDependencies:
-  - PackageIdentifier: Microsoft.WindowsAppRuntime.2
-```
-
-Subsequent versions: `wingetcreate update JakeScott.PowerControlExtensionforCommandPalette --version <ver> --urls "<x64>" "<arm64>" --submit`
 
 ## Features
 
