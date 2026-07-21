@@ -59,7 +59,7 @@ namespace CmdPal.Ext.Power
 				});
 			}
 
-			return bands.Count > 0 ? bands.ToArray() : null;
+			return bands.Count > 0 ? [.. bands] : null;
 		}
 
 		public override void Dispose()

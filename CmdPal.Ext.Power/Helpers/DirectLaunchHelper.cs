@@ -58,7 +58,7 @@ namespace CmdPal.Ext.Power.Helpers
 				return;
 			}
 
-			bool started = false;
+			bool started;
 			try
 			{
 				started = await TryStartCommandPaletteAsync(package).ConfigureAwait(false);

@@ -7,21 +7,16 @@ using Microsoft.CommandPalette.Extensions;
 namespace CmdPal.Ext.Power
 {
 	[Guid("6D9ABD73-60FC-4BB5-9342-8CD5BFFC17CE")]
-	public sealed partial class CmdPalExtPower : IExtension, IDisposable
+	public sealed partial class CmdPalExtPower(ManualResetEvent extensionDisposedEvent) : IExtension, IDisposable
 	{
-		private readonly ManualResetEvent _extensionDisposedEvent;
+		private readonly ManualResetEvent _extensionDisposedEvent = extensionDisposedEvent;
 		private PowerCommandsProvider? _provider;
 
-		public CmdPalExtPower(ManualResetEvent extensionDisposedEvent) => _extensionDisposedEvent = extensionDisposedEvent;
-
-		public object? GetProvider(ProviderType providerType)
+		public object? GetProvider(ProviderType providerType) => providerType switch
 		{
-			return providerType switch
-			{
-				ProviderType.Commands => GetCommandsProvider(),
-				_ => null,
-			};
-		}
+			ProviderType.Commands => GetCommandsProvider(),
+			_ => null,
+		};
 
 		public void Dispose() => _extensionDisposedEvent.Set();
 

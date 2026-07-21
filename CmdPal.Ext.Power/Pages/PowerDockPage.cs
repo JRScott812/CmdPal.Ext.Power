@@ -89,7 +89,7 @@ namespace CmdPal.Ext.Power.Pages
 				items.Add(_planDockItem);
 			}
 
-			_items = items.ToArray();
+			_items = [.. items];
 		}
 
 		private void RefreshPresentation()
