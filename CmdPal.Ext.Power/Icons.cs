@@ -12,9 +12,9 @@ namespace CmdPal.Ext.Power
 	{
 		internal static IconInfo PowerExtensionIcon { get; } = new IconInfo("\uE7E8");
 
-		internal static IconInfo PowerModeBandIcon { get; } = new IconInfo("\uEC49");
+		internal static IconInfo PowerModeBandIcon { get; } = new IconInfo("\uE8FD");
 
-		internal static IconInfo PowerPlanBandIcon { get; } = new IconInfo("\uE8FD");
+		internal static IconInfo PowerPlanBandIcon { get; } = new IconInfo("\uEC49");
 
 		internal static IconInfo EfficiencyIcon { get; } = new IconInfo("\uE8BE");
 
