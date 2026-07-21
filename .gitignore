@@ -15,6 +15,9 @@ _layout/
 artifacts/
 Installer/
 publish/
+# Generated per-arch Inno scripts (from setup-template.iss via build-exe.ps1)
+**/setup-x64.iss
+**/setup-arm64.iss
 Package.StoreAssociation.xml
 *.appx
 *.appxbundle
