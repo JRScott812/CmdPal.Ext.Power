@@ -45,6 +45,8 @@ Directory.Build.user.props
 secrets/
 local.settings.json
 **/wingetcreate*.json
+# Local wingetcreate drafts (submitted to microsoft/winget-pkgs, not this repo)
+manifests/
 
 # IDE / OS
 .idea/
