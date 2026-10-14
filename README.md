@@ -1,3 +1,5 @@
+![Icon](https://github.com/JRScott812/CmdPal.Ext.Power/blob/main/CmdPal.Ext.Power/Assets/SplashScreen.scale-200.png)
+
 # Power (Command Palette extension)
 
 Switch Windows **power modes** and **power plans** from [Command Palette](https://learn.microsoft.com/windows/powertoys/command-palette/overview), with dock bands and fallback search.
