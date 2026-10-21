@@ -1,0 +1,96 @@
+name: Build and Release WinGet Installer
+
+on:
+  push:
+	tags:
+	  - 'v*'
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  build:
+	strategy:
+	  matrix:
+		include:
+		  - arch: x64
+			rid: win-x64
+		  - arch: arm64
+			rid: win-arm64
+
+	runs-on: windows-latest
+
+	steps:
+	  - name: Checkout code
+		uses: actions/checkout@v4
+
+	  - name: Setup .NET 10
+		uses: actions/setup-dotnet@v4
+		with:
+		  dotnet-version: '10.0.x'
+
+	  - name: Install Inno Setup
+		run: |
+		  choco install innosetup -y
+
+	  - name: Extract version from tag
+		id: tag_version
+		run: |
+		  $version = "${{ github.ref }}".Replace("refs/tags/v", "")
+		  echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+
+	  - name: Publish for ${{ matrix.arch }}
+		run: |
+		  dotnet publish CmdPal.Ext.Power/CmdPal.Ext.Power.csproj `
+			-c Release `
+			-r ${{ matrix.rid }} `
+			--no-self-contained `
+			-p:WindowsPackageType=None `
+			-o publish/${{ matrix.arch }}
+
+	  - name: Build ${{ matrix.arch }} installer
+		run: |
+		  $ISCCPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+		  & $ISCCPath /DMyAppVersion=${{ steps.tag_version.outputs.VERSION }} /DArchitecturesAllowed=${{ matrix.arch }} setup-template.iss
+
+	  - name: Upload installer artifact
+		uses: actions/upload-artifact@v4
+		with:
+		  name: installer-${{ matrix.arch }}
+		  path: Installer/Power_Management_for_CommandPalette_*.exe
+
+  release:
+	needs: build
+	runs-on: ubuntu-latest
+
+	steps:
+	  - name: Checkout code
+		uses: actions/checkout@v4
+
+	  - name: Download artifacts
+		uses: actions/download-artifact@v4
+		with:
+		  path: installers
+
+	  - name: Extract version from tag
+		id: tag_version
+		run: |
+		  VERSION="${{ github.ref }}#refs/tags/v}"
+		  echo "VERSION=${VERSION##*/v}" >> $GITHUB_OUTPUT
+
+	  - name: Create GitHub Release
+		uses: softprops/action-gh-release@v1
+		with:
+		  files: |
+			installers/installer-x64/Power_Management_for_CommandPalette_*.exe
+			installers/installer-arm64/Power_Management_for_CommandPalette_*.exe
+		  body: |
+			Power Management for Command Palette v${{ steps.tag_version.outputs.VERSION }}
+
+			[Release Notes](https://github.com/JRScott812/CmdPal.Ext.Power/releases/tag/v${{ steps.tag_version.outputs.VERSION }})
+
+	  - name: Update WinGet manifest
+		run: |
+		  choco install winget-cli -y
+		  wingetcreate update --token ${{ secrets.GITHUB_TOKEN }} --urls "https://github.com/JRScott812/CmdPal.Ext.Power/releases/download/v${{ steps.tag_version.outputs.VERSION }}/Power_Management_for_CommandPalette_${{ steps.tag_version.outputs.VERSION }}_x64.exe" "https://github.com/JRScott812/CmdPal.Ext.Power/releases/download/v${{ steps.tag_version.outputs.VERSION }}/Power_Management_for_CommandPalette_${{ steps.tag_version.outputs.VERSION }}_arm64.exe" JakeScott.PowerManagementforCommandPalette
