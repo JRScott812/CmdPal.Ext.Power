@@ -12,18 +12,23 @@ namespace CmdPal.Ext.Power.Helpers
 		private readonly Timer _updateTimer;
 		private readonly Action _updateAction;
 		private readonly PowerModeService _powerModeService;
+		private readonly PowerPlanService _powerPlanService;
 		private readonly EventHandler _powerModeChangedHandler;
+		private readonly EventHandler _powerPlanChangedHandler;
 		private readonly Lock _activateLock = new();
 		private int _activateCount;
 		private bool _updateFailureHandled;
 
 		internal PowerModeDataManager(
 			PowerModeService powerModeService,
+			PowerPlanService powerPlanService,
 			Action updateAction)
 		{
 			_powerModeService = powerModeService;
+			_powerPlanService = powerPlanService;
 			_updateAction = updateAction;
 			_powerModeChangedHandler = (_, _) => SafeUpdate();
+			_powerPlanChangedHandler = (_, _) => SafeUpdate();
 			_updateTimer = new Timer(OneSecondInMilliseconds)
 			{
 				AutoReset = true,
@@ -31,6 +36,7 @@ namespace CmdPal.Ext.Power.Helpers
 			};
 			_updateTimer.Elapsed += (_, _) => SafeUpdate();
 			_powerModeService.PowerModeChanged += _powerModeChangedHandler;
+			_powerPlanService.PowerPlanChanged += _powerPlanChangedHandler;
 		}
 
 		internal void PushActivate()
@@ -61,12 +67,14 @@ namespace CmdPal.Ext.Power.Helpers
 			StopPolling();
 			_updateTimer.Dispose();
 			_powerModeService.PowerModeChanged -= _powerModeChangedHandler;
+			_powerPlanService.PowerPlanChanged -= _powerPlanChangedHandler;
 		}
 
 		private void StartPolling()
 		{
 			_updateFailureHandled = false;
 			_powerModeService.EnsureSubscribed();
+			_powerPlanService.CheckForPlanChange();
 			SafeUpdate();
 			if (!_updateFailureHandled)
 			{
@@ -84,6 +92,7 @@ namespace CmdPal.Ext.Power.Helpers
 		{
 			try
 			{
+				_powerPlanService.CheckForPlanChange();
 				_updateAction();
 			}
 			catch

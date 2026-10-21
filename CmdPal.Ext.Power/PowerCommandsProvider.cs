@@ -178,7 +178,7 @@ namespace CmdPal.Ext.Power
 				return _dataManager;
 			}
 
-			PowerModeDataManager dataManager = new(_powerModeService, HandleLiveStateChanged);
+			PowerModeDataManager dataManager = new(_powerModeService, _powerPlanService, HandleLiveStateChanged);
 			_dataManager = dataManager;
 			return dataManager;
 		}

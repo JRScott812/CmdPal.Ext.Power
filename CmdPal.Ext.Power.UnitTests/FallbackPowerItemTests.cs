@@ -36,12 +36,12 @@ namespace CmdPal.Ext.Power.UnitTests
 		}
 
 		private static PowerListPage CreateListPage()
-		{
-			PowerModeService service = new();
-			PowerPlanService powerPlanService = new();
-			PowerModeDataManager dataManager = new(service, () => { });
-			PowerListItemBuilder itemBuilder = new(service, powerPlanService);
-			return new PowerListPage(service, powerPlanService, dataManager, itemBuilder);
-		}
+			{
+				PowerModeService service = new();
+				PowerPlanService powerPlanService = new();
+				PowerModeDataManager dataManager = new(service, powerPlanService, () => { });
+				PowerListItemBuilder itemBuilder = new(service, powerPlanService);
+				return new PowerListPage(service, powerPlanService, dataManager, itemBuilder);
+			}
 	}
 }

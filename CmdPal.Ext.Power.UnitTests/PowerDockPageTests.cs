@@ -89,22 +89,23 @@ namespace CmdPal.Ext.Power.UnitTests
 			PowerPlanPickerPage PlanPicker);
 
 		private static TestContext CreateContext()
-		{
-			PowerModeService powerModeService = new();
-			PowerPlanService powerPlanService = new();
-			PowerListItemBuilder itemBuilder = new(powerModeService, powerPlanService);
-			PowerModePickerPage modePicker = null!;
-			PowerPlanPickerPage planPicker = null!;
-			PowerModeDataManager dataManager = new(
-				powerModeService,
-				() =>
-				{
-					modePicker?.HandleLiveStateChanged();
-					planPicker?.HandleLiveStateChanged();
-				});
+			{
+				PowerModeService powerModeService = new();
+				PowerPlanService powerPlanService = new();
+				PowerListItemBuilder itemBuilder = new(powerModeService, powerPlanService);
+				PowerModePickerPage modePicker = null!;
+				PowerPlanPickerPage planPicker = null!;
+				PowerModeDataManager dataManager = new(
+					powerModeService,
+					powerPlanService,
+					() =>
+					{
+						modePicker?.HandleLiveStateChanged();
+						planPicker?.HandleLiveStateChanged();
+					});
 
-			modePicker = new PowerModePickerPage(powerModeService, dataManager, itemBuilder, () => { });
-			planPicker = new PowerPlanPickerPage(powerPlanService, dataManager, itemBuilder, () => { });
+				modePicker = new PowerModePickerPage(powerModeService, dataManager, itemBuilder, () => { });
+				planPicker = new PowerPlanPickerPage(powerPlanService, dataManager, itemBuilder, () => { });
 
 			return new TestContext(
 				powerModeService,

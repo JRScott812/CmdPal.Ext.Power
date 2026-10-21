@@ -13,6 +13,10 @@ namespace CmdPal.Ext.Power.Helpers
 {
 	internal sealed partial class PowerPlanService
 	{
+		private PowerPlanSnapshot? _lastSnapshot;
+
+		internal event EventHandler? PowerPlanChanged;
+
 		internal static PowerPlanSnapshot GetSnapshot()
 		{
 			if (!TryEnumeratePlans(out List<PowerPlanInfo>? plans))
@@ -58,6 +62,31 @@ namespace CmdPal.Ext.Power.Helpers
 			}
 
 			errorMessage = Resources.power_plan_set_failed;
+			return false;
+		}
+
+		internal void CheckForPlanChange()
+		{
+			PowerPlanSnapshot currentSnapshot = GetSnapshot();
+			if (_lastSnapshot is null || HasPlanChanged(_lastSnapshot.Value, currentSnapshot))
+			{
+				_lastSnapshot = currentSnapshot;
+				PowerPlanChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
+		private static bool HasPlanChanged(PowerPlanSnapshot previous, PowerPlanSnapshot current)
+		{
+			if (previous.CanReadPlans != current.CanReadPlans)
+			{
+				return true;
+			}
+
+			if (previous.ActivePlan?.SchemeGuid != current.ActivePlan?.SchemeGuid)
+			{
+				return true;
+			}
+
 			return false;
 		}
 
